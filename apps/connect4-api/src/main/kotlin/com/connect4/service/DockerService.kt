@@ -13,7 +13,7 @@ import java.net.URI
 import java.time.Duration
 
 @ApplicationScoped
-class StatsService {
+class DockerService {
   private val mapper = jacksonObjectMapper()
 
   fun getStats(botsParameters: BotsParameters): Stats {

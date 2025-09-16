@@ -1,6 +1,7 @@
 package com.connect4.service
 
 import com.connect4.model.BotsParameters
+import com.connect4.model.Stats
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 import java.util.LinkedList
@@ -8,11 +9,12 @@ import java.util.Queue
 import java.util.concurrent.Executors
 
 @ApplicationScoped
-class ProcessService {
+class JobsService {
   @Inject
-  private lateinit var statsService: StatsService
+  private lateinit var dockerService: DockerService
 
-  private val processQueue: Queue<BotsParameters> = LinkedList()
+  private val jobsQueue: Queue<BotsParameters> = LinkedList()
+  private val jobsResults = mutableMapOf<String, Stats>()
   private val cores = Runtime.getRuntime().availableProcessors()
 
   fun startProcess() {
@@ -20,9 +22,9 @@ class ProcessService {
 
     val worker = Thread {
       while(true) {
-        val botsParameters = processQueue.poll()
+        val botsParameters = jobsQueue.poll()
         executor.submit {
-          val stats = statsService.getStats(botsParameters)
+          val stats = dockerService.getStats(botsParameters)
         }
       }
     }
@@ -32,10 +34,10 @@ class ProcessService {
   }
 
   fun addProcess(botsParameters: BotsParameters) {
-    processQueue.add(botsParameters)
+    jobsQueue.add(botsParameters)
   }
 
   fun handleProcess(botsParameters: BotsParameters) {
-    val stats = statsService.getStats(botsParameters)
+    val stats = dockerService.getStats(botsParameters)
   }
 }
