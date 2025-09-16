@@ -1,0 +1,30 @@
+{
+  "name": "connect4-api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/connect4-api/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "gradle build",
+        "cwd": "apps/connect4-api"
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "gradle quarkusDev",
+        "cwd": "apps/connect4-api"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "gradle test",
+        "cwd": "apps/connect4-api"
+      }
+    }
+  },
+  "tags": []
+}

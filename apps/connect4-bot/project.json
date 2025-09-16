@@ -1,0 +1,23 @@
+{
+  "name": "connect4-bot",
+  "sourceRoot": "apps/connect4-bot/src",
+  "projectType": "application",
+  "targets": {
+    "docker-build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "gradle shadowjar",
+          "docker build -t connect4-bot:latest ."
+        ],
+        "cwd": "apps/connect4-bot"
+      }
+    },
+    "docker-run": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "docker run -p 8080:8080 connect4-bot:latest"
+      }
+    }
+  }
+}
