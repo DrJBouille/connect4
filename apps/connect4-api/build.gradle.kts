@@ -24,6 +24,7 @@ dependencies {
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
   implementation("jakarta.validation:jakarta.validation-api:3.0.2")
   implementation("io.quarkus:quarkus-arc")
+  implementation("io.quarkus:quarkus-websockets")
   implementation("com.github.docker-java:docker-java-core:3.6.0")
   implementation("com.github.docker-java:docker-java-transport-httpclient5:3.6.0")
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.16.1")
