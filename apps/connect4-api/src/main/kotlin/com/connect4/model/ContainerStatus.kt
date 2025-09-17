@@ -1,9 +1,10 @@
 package com.connect4.model
 
 enum class ContainerStatus {
+  NOT_STARTED,
   PENDING,
   STARTED,
   FINISHED,
-  CLOSED,
+  FAILED,
   CANCELLED,
 }

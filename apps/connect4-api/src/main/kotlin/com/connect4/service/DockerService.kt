@@ -1,6 +1,6 @@
 package com.connect4.service
 
-import com.connect4.model.BotsParameters
+import com.connect4.model.JobParameter
 import com.connect4.model.Stats
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.dockerjava.api.DockerClient
@@ -16,7 +16,7 @@ import java.time.Duration
 class DockerService {
   private val mapper = jacksonObjectMapper()
 
-  fun getStats(botsParameters: BotsParameters): Stats {
+  fun getStats(jobParameter: JobParameter): Stats {
     val dockerClient = createDockerClient()
 
     val container = dockerClient.createContainerCmd("connect4-bot:latest").exec()

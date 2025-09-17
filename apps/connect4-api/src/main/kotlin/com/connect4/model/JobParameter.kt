@@ -1,6 +1,6 @@
 package com.connect4.model
 
-data class BotsParameters(
+data class JobParameter(
   val redDeepness: Int = 1,
   val yellowDeepness: Int = 1
 )
