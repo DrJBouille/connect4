@@ -3,7 +3,8 @@ import {Stats} from "./Stats";
 
 export class Jobs {
   constructor(
-    public id: string,
+    public jobsId: string,
+    public batchId: string,
     public jobParameter: JobParameter,
     public stats: Stats,
     public containerStatus: string

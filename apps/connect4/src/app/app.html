@@ -1,1 +1,33 @@
-<router-outlet></router-outlet>
+<table>
+  <label>NB of process</label>
+  <input [(ngModel)]="nbOfProcess">
+
+  <label>Red deepness</label>
+  <input [(ngModel)]="redDeepness">
+
+  <label>Yellow deepness</label>
+  <input [(ngModel)]="yellowDeepness">
+
+  <button type="button" (click)="this.startBatch()">Start</button>
+
+  <tr>
+    <th>Batch UUID</th>
+    <th>Jobs UUID</th>
+    <th>Statuts</th>
+    <th>Game Time</th>
+    <th>Winner</th>
+    <th>NB of moves</th>
+  </tr>
+
+  @for (jobs of jobsArray$ | async; track jobs.jobsId) {
+    <tr>
+      <td>{{jobs.batchId}}</td>
+      <td>{{jobs.jobsId}}</td>
+      <td>{{jobs.containerStatus}}</td>
+      <td>{{ jobs.stats ? msToTime(jobs.stats.gameTime) : 'NOT FINISHED' }}</td>
+      <td>{{ jobs.stats ? (jobs.stats.doesRedWin ? 'RED' : 'YELLOW') : 'NOT FINISHED' }}</td>
+      <td>{{ jobs.stats ? jobs.stats.moves.length : 'NOT FINISHED' }}</td>
+    </tr>
+  }
+
+</table>

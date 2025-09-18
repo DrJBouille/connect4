@@ -1,6 +1,6 @@
-import {Injectable, NgZone} from '@angular/core';
+import {Injectable, NgZone, OnDestroy} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {Observable, Subject} from "rxjs";
+import {BehaviorSubject, map, Observable, Subject, Subscription} from "rxjs";
 import {BatchParameters} from "./BatchParameters";
 import {BatchIdDTO} from "./BatchIdDTO";
 import {Jobs} from "./Jobs";
@@ -8,10 +8,14 @@ import {Jobs} from "./Jobs";
 @Injectable({
   providedIn: 'root'
 })
-export class JobsService {
+export class JobsService implements OnDestroy {
   private socket?: WebSocket;
+
   private jobIdSubject = new Subject<string>();
   private openSubject = new Subject<void>();
+
+  private jobsSubscription ?: Subscription;
+  private jobsMap$ = new BehaviorSubject(new Map<string, Jobs>());
 
   constructor(private http: HttpClient, private ngZone: NgZone) {
   }
@@ -27,6 +31,14 @@ export class JobsService {
 
     this.socket.onmessage = (event) => {
       this.ngZone.run(() => {
+        const jobsId = event.data
+
+        this.jobsSubscription = this.getJobs(jobsId).subscribe(jobs => {
+          const newMap = new Map(this.jobsMap$.value)
+          newMap.set(jobs.jobsId, {...jobs});
+          this.jobsMap$.next(newMap);
+        });
+
         this.jobIdSubject.next(event.data);
       });
     };
@@ -40,8 +52,10 @@ export class JobsService {
     return this.openSubject.asObservable();
   }
 
-  getJobId$(): Observable<string> {
-    return this.jobIdSubject.asObservable();
+  get jobsArray$() {
+    return this.jobsMap$.pipe(
+      map(map => [...map.values()])
+    )
   }
 
   disconnect(): void {
@@ -52,7 +66,11 @@ export class JobsService {
     return this.http.post<BatchIdDTO>('http://localhost:8080/api/jobs/start', batchParameters);
   }
 
-  getJobs(id: string) {
+  private getJobs(id: string) {
     return this.http.get<Jobs>(`http://localhost:8080/api/jobs/${id}`);
+  }
+
+  ngOnDestroy() {
+    this.jobsSubscription?.unsubscribe();
   }
 }
