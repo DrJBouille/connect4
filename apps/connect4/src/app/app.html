@@ -1,62 +1,57 @@
-<mat-form-field>
-  <mat-label>Nb of process</mat-label>
-  <input matInput type="number" [(ngModel)]="nbOfProcess">
-</mat-form-field>
+<body class="bg-neutral-950 text-gray-100 font-sans p-10 min-h-screen">
 
-<mat-form-field>
-  <mat-label>Red deepness</mat-label>
-  <input matInput type="number" [(ngModel)]="redDeepness">
-</mat-form-field>
+  <div class="bg-neutral-900 border border-zinc-800 rounded-lg shadow-md p-2 px-4 mb-6 flex items-center gap-4">
+    <mat-form-field class="w-48">
+      <mat-label>Nb of process</mat-label>
+      <input matInput type="number" [(ngModel)]="nbOfProcess"
+             class="bg-gray-900 text-gray-100 rounded-lg px-3 py-2 focus:outline-none" />
+    </mat-form-field>
 
-<mat-form-field>
-  <mat-label>Yellow deepness</mat-label>
-  <input matInput type="number" [(ngModel)]="yellowDeepness">
-</mat-form-field>
+    <mat-form-field class="w-48">
+      <mat-label>Red deepness</mat-label>
+      <input matInput type="number" [(ngModel)]="redDeepness"
+             class="bg-gray-900 text-gray-100 rounded-lg px-3 py-2 focus:outline-none" />
+    </mat-form-field>
 
-<button matButton="outlined" (click)="this.startBatch()">Start</button>
+    <mat-form-field class="w-48">
+      <mat-label>Yellow deepness</mat-label>
+      <input matInput type="number" [(ngModel)]="yellowDeepness"
+             class="bg-gray-900 text-gray-100 rounded-lg px-3 py-2 focus:outline-none" />
+    </mat-form-field>
 
-<table mat-table [dataSource]="(jobsArray$ | async) || []" class="mat-elevation-z8">
+    <button (click)="startBatch()"
+            class="ml-auto bg-neutral-100 text-zinc-800 px-24 py-2 rounded-lg shadow hover:brightness-90 transition">
+      Start
+    </button>
+  </div>
 
-  <ng-container matColumnDef="Batch UUID">
-    <th mat-header-cell *matHeaderCellDef>Batch UUID</th>
-    <td mat-cell *matCellDef="let element">{{element.batchId}}</td>
-  </ng-container>
 
-  <ng-container matColumnDef="Jobs UUID">
-    <th mat-header-cell *matHeaderCellDef>Jobs UUID</th>
-    <td mat-cell *matCellDef="let element">{{element.jobsId}}</td>
-  </ng-container>
+  <div class="bg-neutral-900 border border-zinc-800 rounded-lg shadow-md overflow-x-auto p-4">
+    <table class="min-w-full border border-zinc-800 rounded-md divide-y divide-zinc-800 overflow-hidden">
+      <tr>
+        <th class="px-4 py-2 text-left">Batch UUID</th>
+        <th class="px-4 text-left">Jobs UUID</th>
+        <th class="px-4 text-left">Status</th>
+        <th class="px-4 text-left">Red Deepness</th>
+        <th class="px-4 text-left">Yellow Deepness</th>
+        <th class="px-4 text-left">Game Time</th>
+        <th class="px-4 text-left">Winner</th>
+        <th class="px-4 text-left">NB of moves</th>
+      </tr>
 
-  <ng-container matColumnDef="Status">
-    <th mat-header-cell *matHeaderCellDef>Status</th>
-    <td mat-cell *matCellDef="let element">{{element.containerStatus}}</td>
-  </ng-container>
+      @for (element of (jobsArray$ | async); track element.jobsId) {
+        <tr class="hover:bg-neutral-800 transition-colors duration-200">
+          <td class="px-4 py-3">{{element.batchId}}</td>
+          <td class="px-4">{{element.jobsId}}</td>
+          <td class="px-4">{{element.containerStatus}}</td>
+          <td class="px-4">{{element.stats ? element.stats.redDeepness : 'NOT FINISHED'}}</td>
+          <td class="px-4">{{element.stats ? element.stats.yellowDeepness : 'NOT FINISHED'}}</td>
+          <td class="px-4">{{element.stats ? msToTime(element.stats.gameTime) : 'NOT FINISHED'}}</td>
+          <td class="px-4">{{element.stats ? (element.stats.doesRedWin === null ? 'DRAW' : element.stats.doesRedWin ? 'RED' : 'YELLOW') : 'NOT FINISHED'}}</td>
+          <td class="px-4">{{element.stats ? element.stats.moves.length : 'NOT FINISHED'}}</td>
+        </tr>
+      }
+    </table>
+  </div>
 
-  <ng-container matColumnDef="Red Deepness">
-    <th mat-header-cell *matHeaderCellDef>Red Deepness</th>
-    <td mat-cell *matCellDef="let element">{{element.stats ? element.stats.redDeepness : 'NOT FINISHED'}}</td>
-  </ng-container>
-
-  <ng-container matColumnDef="Yellow Deepness">
-    <th mat-header-cell *matHeaderCellDef>Yellow Deepness</th>
-    <td mat-cell *matCellDef="let element">{{element.stats ? element.stats.yellowDeepness : 'NOT FINISHED'}}</td>
-  </ng-container>
-
-  <ng-container matColumnDef="Game Time">
-    <th mat-header-cell *matHeaderCellDef>Game Time</th>
-    <td mat-cell *matCellDef="let element">{{element.stats ? msToTime(element.stats.gameTime) : 'NOT FINISHED'}}</td>
-  </ng-container>
-
-  <ng-container matColumnDef="Winner">
-    <th mat-header-cell *matHeaderCellDef>Batch UUID</th>
-    <td mat-cell *matCellDef="let element">{{element.stats ? (element.stats.doesRedWin === null ? 'DRAW' : element.stats.doesRedWin ? 'RED' : 'YELLOW') : 'NOT FINISHED'}}</td>
-  </ng-container>
-
-  <ng-container matColumnDef="NB of moves">
-    <th mat-header-cell *matHeaderCellDef>NB of moves</th>
-    <td mat-cell *matCellDef="let element">{{element.stats ? element.stats.moves.length : 'NOT FINISHED'}}</td>
-  </ng-container>
-
-  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-</table>
+</body>
