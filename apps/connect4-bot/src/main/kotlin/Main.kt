@@ -6,18 +6,21 @@ import org.example.board.BoardImpl
 import org.example.bot.BotImpl
 import kotlin.system.measureTimeMillis
 
-fun main() {
-    val stats = Stats()
+fun main(args: Array<String>) {
+    val redDeepness = args.getOrNull(0)?.toIntOrNull() ?: 1
+    val yellowDeepness = args.getOrNull(1)?.toIntOrNull() ?: 1
+
+    val stats = Stats(redDeepness = redDeepness, yellowDeepness = yellowDeepness)
     val board = BoardImpl()
-    var hasWin = false
     var isRedTurn = true
+    var doesRedWin: Boolean? = null
 
     val gameTime = measureTimeMillis {
-        val redBot = BotImpl(true, 1)
-        val yellowBot = BotImpl(false, 7)
+        val redBot = BotImpl(true, redDeepness)
+        val yellowBot = BotImpl(false, yellowDeepness)
 
         while (true) {
-            if (board.board.none {null in it}) return
+            if (board.board.none {null in it}) break
 
             var coordinate: Pair<Int, Int>
             val timeToMove = measureTimeMillis {
@@ -32,15 +35,19 @@ fun main() {
 
             stats.moves.add(Move(timeToMove, coordinate, board.board))
 
-            if (board.doesPlayerWin(coordinate, isRedTurn)) break
+            if (board.doesPlayerWin(coordinate, isRedTurn)) {
+              doesRedWin = isRedTurn
+              break
+            }
 
             isRedTurn = !isRedTurn
         }
     }
 
     stats.gameTime = gameTime
-    stats.doesRedWin = isRedTurn
+    stats.doesRedWin = doesRedWin
 
     val mapper = jsonMapper().registerKotlinModule()
     println(mapper.writeValueAsString(stats))
+    System.out.flush()
 }

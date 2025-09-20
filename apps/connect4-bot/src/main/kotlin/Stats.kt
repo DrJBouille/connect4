@@ -2,7 +2,9 @@ package org.example
 
 data class Stats(
     var gameTime: Long = 0,
-    var doesRedWin: Boolean = true,
+    var doesRedWin: Boolean? = null,
+    val redDeepness: Int = 1,
+    val yellowDeepness: Int = 1,
     val moves: MutableList<Move> = mutableListOf()
 )
 
