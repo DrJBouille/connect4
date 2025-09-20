@@ -48,10 +48,6 @@ export class JobsService implements OnDestroy {
     this.socket.onerror = (error) => {console.log(`WebSocket error: ${error}`)}
   }
 
-  onOpen(): Observable<void> {
-    return this.openSubject.asObservable();
-  }
-
   get jobsArray$() {
     return this.jobsMap$.pipe(
       map(map => [...map.values()])

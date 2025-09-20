@@ -1,4 +1,3 @@
-<p class="bg-red-400">fzazd</p>
 <mat-form-field>
   <mat-label>Nb of process</mat-label>
   <input matInput type="number" [(ngModel)]="nbOfProcess">
@@ -33,6 +32,16 @@
     <td mat-cell *matCellDef="let element">{{element.containerStatus}}</td>
   </ng-container>
 
+  <ng-container matColumnDef="Red Deepness">
+    <th mat-header-cell *matHeaderCellDef>Red Deepness</th>
+    <td mat-cell *matCellDef="let element">{{element.stats ? element.stats.redDeepness : 'NOT FINISHED'}}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="Yellow Deepness">
+    <th mat-header-cell *matHeaderCellDef>Yellow Deepness</th>
+    <td mat-cell *matCellDef="let element">{{element.stats ? element.stats.yellowDeepness : 'NOT FINISHED'}}</td>
+  </ng-container>
+
   <ng-container matColumnDef="Game Time">
     <th mat-header-cell *matHeaderCellDef>Game Time</th>
     <td mat-cell *matCellDef="let element">{{element.stats ? msToTime(element.stats.gameTime) : 'NOT FINISHED'}}</td>
@@ -40,7 +49,7 @@
 
   <ng-container matColumnDef="Winner">
     <th mat-header-cell *matHeaderCellDef>Batch UUID</th>
-    <td mat-cell *matCellDef="let element">{{element.stats ? (element.stats.doesRedWin ? 'RED' : 'YELLOW') : 'NOT FINISHED'}}</td>
+    <td mat-cell *matCellDef="let element">{{element.stats ? (element.stats.doesRedWin === null ? 'DRAW' : element.stats.doesRedWin ? 'RED' : 'YELLOW') : 'NOT FINISHED'}}</td>
   </ng-container>
 
   <ng-container matColumnDef="NB of moves">

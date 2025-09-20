@@ -49,7 +49,7 @@ export class App implements OnInit, OnDestroy {
   yellowDeepness = 3;
 
   jobsArray$: Observable<Jobs[]>;
-  displayedColumns: string[] = ['Batch UUID', 'Jobs UUID', 'Status', 'Game Time', 'Winner', 'NB of moves'];
+  displayedColumns: string[] = ['Batch UUID', 'Jobs UUID', 'Status', 'Red Deepness', 'Yellow Deepness', 'Game Time', 'Winner', 'NB of moves'];
 
   constructor(private jobsService: JobsService, private cdr: ChangeDetectorRef) {
     this.jobsArray$ = this.jobsService.jobsArray$;
