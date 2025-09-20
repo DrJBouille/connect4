@@ -1,33 +1,53 @@
-<table>
-  <label>NB of process</label>
-  <input [(ngModel)]="nbOfProcess">
+<p class="bg-red-400">fzazd</p>
+<mat-form-field>
+  <mat-label>Nb of process</mat-label>
+  <input matInput type="number" [(ngModel)]="nbOfProcess">
+</mat-form-field>
 
-  <label>Red deepness</label>
-  <input [(ngModel)]="redDeepness">
+<mat-form-field>
+  <mat-label>Red deepness</mat-label>
+  <input matInput type="number" [(ngModel)]="redDeepness">
+</mat-form-field>
 
-  <label>Yellow deepness</label>
-  <input [(ngModel)]="yellowDeepness">
+<mat-form-field>
+  <mat-label>Yellow deepness</mat-label>
+  <input matInput type="number" [(ngModel)]="yellowDeepness">
+</mat-form-field>
 
-  <button type="button" (click)="this.startBatch()">Start</button>
+<button matButton="outlined" (click)="this.startBatch()">Start</button>
 
-  <tr>
-    <th>Batch UUID</th>
-    <th>Jobs UUID</th>
-    <th>Statuts</th>
-    <th>Game Time</th>
-    <th>Winner</th>
-    <th>NB of moves</th>
-  </tr>
+<table mat-table [dataSource]="(jobsArray$ | async) || []" class="mat-elevation-z8">
 
-  @for (jobs of jobsArray$ | async; track jobs.jobsId) {
-    <tr>
-      <td>{{jobs.batchId}}</td>
-      <td>{{jobs.jobsId}}</td>
-      <td>{{jobs.containerStatus}}</td>
-      <td>{{ jobs.stats ? msToTime(jobs.stats.gameTime) : 'NOT FINISHED' }}</td>
-      <td>{{ jobs.stats ? (jobs.stats.doesRedWin ? 'RED' : 'YELLOW') : 'NOT FINISHED' }}</td>
-      <td>{{ jobs.stats ? jobs.stats.moves.length : 'NOT FINISHED' }}</td>
-    </tr>
-  }
+  <ng-container matColumnDef="Batch UUID">
+    <th mat-header-cell *matHeaderCellDef>Batch UUID</th>
+    <td mat-cell *matCellDef="let element">{{element.batchId}}</td>
+  </ng-container>
 
+  <ng-container matColumnDef="Jobs UUID">
+    <th mat-header-cell *matHeaderCellDef>Jobs UUID</th>
+    <td mat-cell *matCellDef="let element">{{element.jobsId}}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="Status">
+    <th mat-header-cell *matHeaderCellDef>Status</th>
+    <td mat-cell *matCellDef="let element">{{element.containerStatus}}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="Game Time">
+    <th mat-header-cell *matHeaderCellDef>Game Time</th>
+    <td mat-cell *matCellDef="let element">{{element.stats ? msToTime(element.stats.gameTime) : 'NOT FINISHED'}}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="Winner">
+    <th mat-header-cell *matHeaderCellDef>Batch UUID</th>
+    <td mat-cell *matCellDef="let element">{{element.stats ? (element.stats.doesRedWin ? 'RED' : 'YELLOW') : 'NOT FINISHED'}}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="NB of moves">
+    <th mat-header-cell *matHeaderCellDef>NB of moves</th>
+    <td mat-cell *matCellDef="let element">{{element.stats ? element.stats.moves.length : 'NOT FINISHED'}}</td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 </table>

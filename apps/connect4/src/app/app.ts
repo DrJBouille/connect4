@@ -1,16 +1,42 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {JobsService} from "./jobs-service/jobs-service";
-import {Observable, Subscription} from "rxjs";
+import {Observable} from "rxjs";
 import {BatchParameters} from "./jobs-service/BatchParameters";
 import {JobParameter} from "./jobs-service/JobParameter";
 import {Jobs} from "./jobs-service/Jobs";
 import {AsyncPipe} from "@angular/common";
 import {FormsModule} from "@angular/forms";
+import {
+  MatCell,
+  MatCellDef, MatColumnDef,
+  MatHeaderCell, MatHeaderCellDef,
+  MatHeaderRow,
+  MatHeaderRowDef,
+  MatRow,
+  MatRowDef, MatTable
+} from "@angular/material/table";
+import {MatFormField, MatLabel} from "@angular/material/form-field";
+import {MatInput} from "@angular/material/input";
+import {MatButton} from "@angular/material/button";
 
 @Component({
   imports: [
     AsyncPipe,
-    FormsModule
+    FormsModule,
+    MatCell,
+    MatCellDef,
+    MatHeaderCell,
+    MatHeaderRow,
+    MatHeaderRowDef,
+    MatRow,
+    MatRowDef,
+    MatTable,
+    MatColumnDef,
+    MatHeaderCellDef,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    MatButton
   ],
   selector: 'app-root',
   templateUrl: './app.html',
@@ -23,12 +49,14 @@ export class App implements OnInit, OnDestroy {
   yellowDeepness = 3;
 
   jobsArray$: Observable<Jobs[]>;
+  displayedColumns: string[] = ['Batch UUID', 'Jobs UUID', 'Status', 'Game Time', 'Winner', 'NB of moves'];
 
   constructor(private jobsService: JobsService, private cdr: ChangeDetectorRef) {
     this.jobsArray$ = this.jobsService.jobsArray$;
   }
 
   ngOnInit() {
+    document.body.classList.add('dark-theme');
     this.jobsService.connect('ws://localhost:8080/ws/jobs');
   }
 
