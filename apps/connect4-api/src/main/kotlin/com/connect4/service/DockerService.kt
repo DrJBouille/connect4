@@ -19,7 +19,7 @@ class DockerService {
   fun getStats(jobParameter: JobParameter): Stats {
     val dockerClient = createDockerClient()
 
-    val container = dockerClient.createContainerCmd("connect4-bot:latest").exec()
+    val container = dockerClient.createContainerCmd("connect4-bot:latest").withCmd(jobParameter.redDeepness.toString(), jobParameter.yellowDeepness.toString()).exec()
 
     dockerClient.startContainerCmd(container.id).exec()
 
