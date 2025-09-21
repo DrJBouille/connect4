@@ -1,17 +1,19 @@
 package com.connect4.service
 
 import com.connect4.controller.JobsResultsNotifier
-import com.connect4.model.JobParameter
 import com.connect4.model.ContainerStatus
 import com.connect4.model.DTO.BatchParameters
 import com.connect4.model.JobBatch
 import com.connect4.model.Jobs
+import com.connect4.model.RemainingTasks
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
+import java.lang.management.ManagementFactory
 import java.util.LinkedList
 import java.util.Queue
 import java.util.UUID
 import java.util.concurrent.Executors
+import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.atomic.AtomicBoolean
 
 @ApplicationScoped
@@ -25,8 +27,8 @@ class JobsService {
   private val batchQueue: Queue<JobBatch> = LinkedList()
   private val jobsResults = mutableMapOf<String, Jobs>()
 
-  private val cores = Runtime.getRuntime().availableProcessors()
-  private val executor = Executors.newFixedThreadPool(cores - 3)
+  private val cores = Runtime.getRuntime().availableProcessors() - 3
+  private val executor = Executors.newFixedThreadPool(cores) as ThreadPoolExecutor
 
   private val isRunning = AtomicBoolean(false)
 
@@ -52,7 +54,7 @@ class JobsService {
         val futures = batch.jobs.map { job ->
           executor.submit {
             try {
-              job.containerStatus = ContainerStatus.STARTED
+              job.containerStatus = ContainerStatus.RUNNING
               jobsResults[job.jobsId] = job
               jobsResultsNotifier.broadcast(job.jobsId)
 
@@ -91,5 +93,26 @@ class JobsService {
 
   fun getJob(id: String): Jobs? {
     return jobsResults[id]
+  }
+
+  fun getRemainingTasks(): RemainingTasks {
+    val remainingJobs = if (batchQueue.isEmpty()) 0 else batchQueue.sumOf { it.jobs.size }
+    val notStartedJobs = jobsResults.entries.count { (id, job) -> job.containerStatus == ContainerStatus.NOT_STARTED }
+    val pendingJobs = jobsResults.entries.count { (id, job) -> job.containerStatus == ContainerStatus.PENDING }
+    val runningJobs = jobsResults.entries.count { (id, job) -> job.containerStatus == ContainerStatus.RUNNING }
+    val finishedJobs = jobsResults.entries.count { (id, job) -> job.containerStatus == ContainerStatus.FINISHED }
+    val failedJobs = jobsResults.entries.count { (id, job) -> job.containerStatus == ContainerStatus.FAILED }
+
+    return RemainingTasks(
+      executor.activeCount,
+      cores,
+      batchQueue.size,
+      remainingJobs,
+      notStartedJobs,
+      pendingJobs,
+      runningJobs,
+      finishedJobs,
+      failedJobs
+    )
   }
 }

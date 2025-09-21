@@ -1,5 +1,46 @@
 <body class="bg-neutral-950 text-gray-100 font-sans p-10 min-h-screen">
 
+  <div class="mb-6 flex items-center gap-4">
+    <div class="bg-neutral-900 border border-zinc-800 rounded-lg shadow-md p-2 px-10">
+      <p class="font-semibold">Thread</p>
+      <p class="text-2xl font-bold">
+        {{(remainingTasks$ | async)?.threadInUse || 0}}
+        /
+        {{(remainingTasks$ | async)?.totalThread || 0}}
+      </p>
+    </div>
+
+    <div class="bg-neutral-900 border border-zinc-800 rounded-lg shadow-md p-2 px-10">
+      <p class="font-semibold">Remaining Batch</p>
+      <p class="text-2xl font-bold">{{(remainingTasks$ | async)?.remainingBatches || 0}} </p>
+    </div>
+
+    <div class="bg-neutral-900 border border-zinc-800 rounded-lg shadow-md p-2 px-10">
+      <p class="font-semibold">Not Started Jobs</p>
+      <p class="text-2xl font-bold">{{(remainingTasks$ | async)?.notStartedJobs || 0}} </p>
+    </div>
+
+    <div class="bg-neutral-900 border border-zinc-800 rounded-lg shadow-md p-2 px-10">
+      <p class="font-semibold">Pending Jobs</p>
+      <p class="text-2xl font-bold">{{(remainingTasks$ | async)?.pendingJobs || 0}} </p>
+    </div>
+
+    <div class="bg-neutral-900 border border-zinc-800 rounded-lg shadow-md p-2 px-10">
+      <p class="font-semibold">Running Jobs</p>
+      <p class="text-2xl font-bold">{{(remainingTasks$ | async)?.runningJobs || 0}} </p>
+    </div>
+
+    <div class="bg-neutral-900 border border-zinc-800 rounded-lg shadow-md p-2 px-10">
+      <p class="font-semibold">Finished Jobs</p>
+      <p class="text-2xl font-bold">{{(remainingTasks$ | async)?.finishedJobs || 0}} </p>
+    </div>
+
+    <div class="bg-neutral-900 border border-zinc-800 rounded-lg shadow-md p-2 px-10">
+      <p class="font-semibold">Failed Jobs</p>
+      <p class="text-2xl font-bold">{{(remainingTasks$ | async)?.failedJobs || 0}} </p>
+    </div>
+  </div>
+
   <div class="bg-neutral-900 border border-zinc-800 rounded-lg shadow-md p-2 px-4 mb-6 flex items-center gap-4">
     <mat-form-field class="w-48">
       <mat-label>Nb of process</mat-label>

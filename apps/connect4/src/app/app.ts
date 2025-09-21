@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {JobsService} from "./jobs-service/jobs-service";
 import {Observable} from "rxjs";
 import {BatchParameters} from "./jobs-service/BatchParameters";
@@ -8,6 +8,7 @@ import {AsyncPipe} from "@angular/common";
 import {FormsModule} from "@angular/forms";
 import {MatFormField, MatLabel} from "@angular/material/form-field";
 import {MatInput} from "@angular/material/input";
+import {RemainingTasks} from "./jobs-service/RemainingTasks";
 
 @Component({
   imports: [
@@ -22,24 +23,22 @@ import {MatInput} from "@angular/material/input";
   styleUrl: './app.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class App implements OnInit, OnDestroy {
+export class App implements OnInit {
   nbOfProcess = 10;
   redDeepness = 3;
   yellowDeepness = 3;
 
   jobsArray$: Observable<Jobs[]>;
+  remainingTasks$: Observable<RemainingTasks>;
 
-  constructor(private jobsService: JobsService, private cdr: ChangeDetectorRef) {
+  constructor(private jobsService: JobsService) {
     this.jobsArray$ = this.jobsService.jobsArray$;
+    this.remainingTasks$ = this.jobsService.remainingTasks$;
   }
 
   ngOnInit() {
     document.body.classList.add('dark-theme');
     this.jobsService.connect('ws://localhost:8080/ws/jobs');
-  }
-
-  ngOnDestroy() {
-    this.jobsService.disconnect();
   }
 
   startBatch() {

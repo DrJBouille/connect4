@@ -4,6 +4,7 @@ import {BehaviorSubject, map, Observable, Subject, Subscription} from "rxjs";
 import {BatchParameters} from "./BatchParameters";
 import {BatchIdDTO} from "./BatchIdDTO";
 import {Jobs} from "./Jobs";
+import {RemainingTasks} from "./RemainingTasks";
 
 @Injectable({
   providedIn: 'root'
@@ -13,8 +14,11 @@ export class JobsService implements OnDestroy {
 
   private jobIdSubject = new Subject<string>();
   private openSubject = new Subject<void>();
+  private remainingTasksSubject= new Subject<RemainingTasks>();
 
   private jobsSubscription ?: Subscription;
+  private remainingTaskSubscription ?: Subscription;
+
   private jobsMap$ = new BehaviorSubject(new Map<string, Jobs>());
 
   constructor(private http: HttpClient, private ngZone: NgZone) {
@@ -39,6 +43,11 @@ export class JobsService implements OnDestroy {
           this.jobsMap$.next(newMap);
         });
 
+        this.remainingTaskSubscription = this.getRemainingTasks().subscribe(remainingTasks => {
+          console.log(remainingTasks);
+          this.remainingTasksSubject.next({...remainingTasks});
+        })
+
         this.jobIdSubject.next(event.data);
       });
     };
@@ -54,8 +63,8 @@ export class JobsService implements OnDestroy {
     )
   }
 
-  disconnect(): void {
-    this.socket?.close();
+  get remainingTasks$() {
+    return this.remainingTasksSubject.asObservable();
   }
 
   startBatch(batchParameters: BatchParameters) {
@@ -66,7 +75,13 @@ export class JobsService implements OnDestroy {
     return this.http.get<Jobs>(`http://localhost:8080/api/jobs/${id}`);
   }
 
+  private getRemainingTasks() {
+    return this.http.get<RemainingTasks>(`http://localhost:8080/api/jobs/remainingTasks`);
+  }
+
   ngOnDestroy() {
     this.jobsSubscription?.unsubscribe();
+    this.remainingTaskSubscription?.unsubscribe();
+    this.socket?.close();
   }
 }

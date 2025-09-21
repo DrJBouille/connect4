@@ -34,4 +34,10 @@ class JobsController {
     val job = jobsService.getJob(id) ?: return Response.status(Response.Status.NOT_FOUND).build()
     return Response.ok().entity(job).build()
   }
+
+  @GET
+  @Path("/remainingTasks")
+  fun getRemainingTasks(): Response {
+    return Response.ok().entity(jobsService.getRemainingTasks()).build()
+  }
 }
