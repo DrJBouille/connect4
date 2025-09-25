@@ -1,16 +1,21 @@
 package com.connect4.model
 
-data class Stats(
-  var gameTime: Long = 0,
-  var doesRedWin: Boolean? = null,
-  val redDeepness: Int = 1,
-  val yellowDeepness: Int = 1,
-  val moves: MutableList<Move> = mutableListOf()
+class Stats {
+  var gameTime: Long = 0
+  var doesRedWin: Boolean? = null
+  var redDeepness: Int = 1
+  var yellowDeepness: Int = 1
+  var moves: MutableList<Move> = mutableListOf()
+}
+
+class Move(
+  var time: Long = 0,
+  var coordinate: Coordinate = Coordinate(),
+  var board: MutableList<MutableList<Boolean?>> = mutableListOf()
 )
 
-data class Move(
-  val time: Long = 0,
-  val coordinate: Pair<Int, Int> = Pair(0, 0),
-  val board: MutableList<MutableList<Boolean?>> = mutableListOf()
+data class Coordinate(
+  var x: Int = 0,
+  var y: Int = 0
 )
 

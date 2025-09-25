@@ -37,13 +37,11 @@ export class App implements OnInit {
   }
 
   ngOnInit() {
-    document.body.classList.add('dark-theme');
     this.jobsService.connect('ws://localhost:8080/ws/jobs');
   }
 
   startBatch() {
-    this.jobsService.startBatch(new BatchParameters(this.nbOfProcess, new JobParameter(this.redDeepness, this.yellowDeepness)))
-      .subscribe(batchId => console.log('BatchId via HTTP:', batchId));
+    this.jobsService.startBatch(new BatchParameters(this.nbOfProcess, new JobParameter(this.redDeepness, this.yellowDeepness))).subscribe();
   }
 
   msToTime(ms: number): string {

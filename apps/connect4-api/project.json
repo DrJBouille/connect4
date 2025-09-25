@@ -14,7 +14,7 @@
     "serve": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "gradle quarkusDev",
+        "command": "docker compose down -v && docker compose up -d && gradle quarkusDev",
         "cwd": "apps/connect4-api"
       }
     },

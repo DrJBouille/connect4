@@ -1,5 +1,6 @@
 package org.example.board
 
+import org.example.Coordinate
 import org.example.utils.checkDiscsOnARow
 
 class BoardImpl : Board {
@@ -12,17 +13,17 @@ class BoardImpl : Board {
         MutableList(7) {null}
     )
 
-    override fun addDiscs(coordinate: Pair<Int, Int>, isRed: Boolean) {
-        board[coordinate.first][coordinate.second] = isRed
+    override fun addDiscs(coordinate: Coordinate, isRed: Boolean) {
+        board[coordinate.y][coordinate.x] = isRed
     }
 
-    override fun getPossibleMoves(): MutableList<Pair<Int, Int>> {
-        val possibleMoves = mutableListOf<Pair<Int, Int>>()
+    override fun getPossibleMoves(): MutableList<Coordinate> {
+        val possibleMoves = mutableListOf<Coordinate>()
 
         for (col in 0 until board[0].size) {
             for (row in 0 until board.size) {
                 if (board[row][col] == null) {
-                    possibleMoves.add(Pair(row, col))
+                    possibleMoves.add(Coordinate(col, row))
                     break
                 }
             }
@@ -30,7 +31,7 @@ class BoardImpl : Board {
         return possibleMoves
     }
 
-    override fun doesPlayerWin(coordinate: Pair<Int, Int>, isRed: Boolean): Boolean {
+    override fun doesPlayerWin(coordinate: Coordinate, isRed: Boolean): Boolean {
         return checkDiscsOnARow(board, coordinate, isRed) >= 4
     }
 }

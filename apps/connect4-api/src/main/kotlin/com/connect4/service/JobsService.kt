@@ -1,14 +1,15 @@
 package com.connect4.service
 
 import com.connect4.controller.JobsResultsNotifier
-import com.connect4.model.ContainerStatus
+import com.connect4.model.Status
 import com.connect4.model.DTO.BatchParameters
-import com.connect4.model.JobBatch
+import com.connect4.model.Batch
 import com.connect4.model.Jobs
 import com.connect4.model.RemainingTasks
+import com.connect4.repository.BatchesRepository
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
-import java.lang.management.ManagementFactory
+import kotlinx.coroutines.Job
 import java.util.LinkedList
 import java.util.Queue
 import java.util.UUID
@@ -24,8 +25,10 @@ class JobsService {
   @Inject
   private lateinit var jobsResultsNotifier: JobsResultsNotifier
 
-  private val batchQueue: Queue<JobBatch> = LinkedList()
-  private val jobsResults = mutableMapOf<String, Jobs>()
+  @Inject
+  private lateinit var batchesRepository: BatchesRepository
+
+  private val batchQueue: Queue<Batch> = LinkedList()
 
   private val cores = Runtime.getRuntime().availableProcessors() - 3
   private val executor = Executors.newFixedThreadPool(cores) as ThreadPoolExecutor
@@ -45,31 +48,38 @@ class JobsService {
           break
         }
 
+        batch.status = Status.RUNNING
+
         batch.jobs.forEach {
-          it.containerStatus = ContainerStatus.PENDING
-          jobsResults[it.jobsId] = it
-          jobsResultsNotifier.broadcast(it.jobsId)
+          it.status = Status.PENDING
+          batchesRepository.update(batch)
+          jobsResultsNotifier.broadcast(batch.id, it.jobsId)
         }
 
         val futures = batch.jobs.map { job ->
           executor.submit {
             try {
-              job.containerStatus = ContainerStatus.RUNNING
-              jobsResults[job.jobsId] = job
-              jobsResultsNotifier.broadcast(job.jobsId)
+              job.status = Status.RUNNING
+              batchesRepository.update(batch)
+              jobsResultsNotifier.broadcast(batch.id, job.jobsId)
 
-              val stats = dockerService.getStats(job.jobParameter)
+              val stats = dockerService.getStats(batch.jobParameter)
               job.stats = stats
 
-              jobsResults[job.jobsId] = job
+              batchesRepository.update(batch)
 
-              job.containerStatus = ContainerStatus.FINISHED
+              job.status = Status.FINISHED
             } catch (e: Exception) {
-              job.containerStatus = ContainerStatus.FAILED
+              println(e.message)
+              job.status = Status.FAILED
             }
-            jobsResultsNotifier.broadcast(job.jobsId)
+            batchesRepository.update(batch)
+            jobsResultsNotifier.broadcast(batch.id, job.jobsId)
           }
         }
+
+        batch.status = Status.FINISHED
+        batchesRepository.update(batch)
 
         futures.forEach { it.get() }
       }
@@ -81,27 +91,48 @@ class JobsService {
 
   fun addBatch(batchParameters: BatchParameters): String {
     val batchId = UUID.randomUUID().toString()
-    val jobs = List(batchParameters.nbOfProcess) { Jobs(UUID.randomUUID().toString(), batchId, batchParameters.jobParameter) }
+
+    val jobs = List(batchParameters.nbOfProcess) {
+      val jobs = Jobs()
+      jobs.batchId = batchId
+      jobs.jobsId = UUID.randomUUID().toString()
+      jobs
+    }
+
+    val batch = Batch()
+    batch.id = batchId
+    batch.jobs = jobs
+    batch.jobParameter = batchParameters.jobParameter
+    batchesRepository.persist(batch)
 
     jobs.forEach {
-      jobsResults[it.jobsId] = it
-      jobsResultsNotifier.broadcast(it.jobsId)
+      jobsResultsNotifier.broadcast(batchId, it.jobsId)
     }
-    batchQueue.add(JobBatch(batchId, jobs))
+
+    batchQueue.add(batch)
     return batchId
   }
 
-  fun getJob(id: String): Jobs? {
-    return jobsResults[id]
+  fun getJob(batchId: String, jobId: String): Jobs? {
+    val batch = batchesRepository.finByBatchId(batchId) ?: return null
+    return batch.jobs.find { it.jobsId == jobId }
+  }
+
+  fun getAllJobs(): List<Jobs> {
+    val batches = batchesRepository.listAll()
+    return batches.flatMap { it.jobs }
   }
 
   fun getRemainingTasks(): RemainingTasks {
     val remainingJobs = if (batchQueue.isEmpty()) 0 else batchQueue.sumOf { it.jobs.size }
-    val notStartedJobs = jobsResults.entries.count { (id, job) -> job.containerStatus == ContainerStatus.NOT_STARTED }
-    val pendingJobs = jobsResults.entries.count { (id, job) -> job.containerStatus == ContainerStatus.PENDING }
-    val runningJobs = jobsResults.entries.count { (id, job) -> job.containerStatus == ContainerStatus.RUNNING }
-    val finishedJobs = jobsResults.entries.count { (id, job) -> job.containerStatus == ContainerStatus.FINISHED }
-    val failedJobs = jobsResults.entries.count { (id, job) -> job.containerStatus == ContainerStatus.FAILED }
+
+    val jobs = getAllJobs()
+
+    val notStartedJobs = jobs.count { job -> job.status == Status.NOT_STARTED }
+    val pendingJobs = jobs.count { job -> job.status == Status.PENDING }
+    val runningJobs = jobs.count { job -> job.status == Status.RUNNING }
+    val finishedJobs = jobs.count { job -> job.status == Status.FINISHED }
+    val failedJobs = jobs.count { job -> job.status == Status.FAILED }
 
     return RemainingTasks(
       executor.activeCount,

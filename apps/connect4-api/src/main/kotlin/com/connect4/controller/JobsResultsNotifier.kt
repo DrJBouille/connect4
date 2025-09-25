@@ -1,5 +1,7 @@
 package com.connect4.controller
 
+import com.connect4.model.DTO.NotificationDTO
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.websocket.OnClose
 import jakarta.websocket.OnError
@@ -36,7 +38,9 @@ class JobsResultsNotifier {
     session.asyncRemote.sendText(message)
   }
 
-  fun broadcast(message: String) {
-    sessions.filter { it.isOpen }.forEach { it.asyncRemote.sendText(message) }
+  fun broadcast(batchId: String, jobsId: String) {
+    val jsonNotification = jacksonObjectMapper().writeValueAsString(NotificationDTO(batchId, jobsId))
+
+    sessions.filter { it.isOpen }.forEach { it.asyncRemote.sendText(jsonNotification) }
   }
 }

@@ -1,12 +1,14 @@
 package org.example.utils
 
+import org.example.Coordinate
+
 fun checkDiscsOnARow(
     board: MutableList<MutableList<Boolean?>>,
-    coordinate: Pair<Int, Int>,
+    coordinate: Coordinate,
     isRed: Boolean
 ): Int {
-    val row = coordinate.first
-    val col = coordinate.second
+    val row = coordinate.y
+    val col = coordinate.x
 
     val directions = listOf(0 to 1, 1 to 0, 1 to 1, 1 to -1)
 

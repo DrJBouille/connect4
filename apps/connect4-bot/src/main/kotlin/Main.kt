@@ -22,7 +22,7 @@ fun main(args: Array<String>) {
         while (true) {
             if (board.board.none {null in it}) break
 
-            var coordinate: Pair<Int, Int>
+            var coordinate: Coordinate
             val timeToMove = measureTimeMillis {
                 coordinate = if (isRedTurn) redBot.getBestMove(board).first else yellowBot.getBestMove(board).first
             }

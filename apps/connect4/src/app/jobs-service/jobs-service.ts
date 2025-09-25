@@ -1,10 +1,11 @@
 import {Injectable, NgZone, OnDestroy} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {BehaviorSubject, map, Observable, Subject, Subscription} from "rxjs";
+import {BehaviorSubject, map, Subject, Subscription} from "rxjs";
 import {BatchParameters} from "./BatchParameters";
 import {BatchIdDTO} from "./BatchIdDTO";
 import {Jobs} from "./Jobs";
 import {RemainingTasks} from "./RemainingTasks";
+import {NotificationDTO} from "./NotificationDTO";
 
 @Injectable({
   providedIn: 'root'
@@ -35,16 +36,15 @@ export class JobsService implements OnDestroy {
 
     this.socket.onmessage = (event) => {
       this.ngZone.run(() => {
-        const jobsId = event.data
+        const notification: NotificationDTO = JSON.parse(event.data);
 
-        this.jobsSubscription = this.getJobs(jobsId).subscribe(jobs => {
+        this.jobsSubscription = this.getJobs(notification.batchId, notification.jobsId).subscribe(jobs => {
           const newMap = new Map(this.jobsMap$.value)
           newMap.set(jobs.jobsId, {...jobs});
           this.jobsMap$.next(newMap);
         });
 
         this.remainingTaskSubscription = this.getRemainingTasks().subscribe(remainingTasks => {
-          console.log(remainingTasks);
           this.remainingTasksSubject.next({...remainingTasks});
         })
 
@@ -71,8 +71,8 @@ export class JobsService implements OnDestroy {
     return this.http.post<BatchIdDTO>('http://localhost:8080/api/jobs/start', batchParameters);
   }
 
-  private getJobs(id: string) {
-    return this.http.get<Jobs>(`http://localhost:8080/api/jobs/${id}`);
+  private getJobs(batchId: string, jobsId: string) {
+    return this.http.get<Jobs>(`http://localhost:8080/api/jobs/${batchId}/${jobsId}`);
   }
 
   private getRemainingTasks() {

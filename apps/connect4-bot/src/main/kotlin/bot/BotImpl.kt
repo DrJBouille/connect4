@@ -1,5 +1,6 @@
 package org.example.bot
 
+import org.example.Coordinate
 import org.example.board.Board
 import org.example.board.BoardImpl
 import org.example.utils.checkDiscsOnARow
@@ -9,13 +10,13 @@ class BotImpl(override val isRed: Boolean, override val deepness: Int) : Bot {
         board: Board,
         isMyTurn: Boolean,
         actualDeepness: Int
-    ): Pair<Pair<Int, Int>, Int> {
+    ): Pair<Coordinate, Int> {
         val possibleMoves = board.getPossibleMoves()
 
         val isActuallyRed = if (isMyTurn) isRed else !isRed
 
         if (actualDeepness == deepness || possibleMoves.isEmpty()) {
-            var bestMove: Pair<Int, Int>? = null
+            var bestMove: Coordinate? = null
             var bestScore = if (isMyTurn) Int.MIN_VALUE else Int.MAX_VALUE
 
             for (move in possibleMoves) {
@@ -34,11 +35,11 @@ class BotImpl(override val isRed: Boolean, override val deepness: Int) : Bot {
                 }
             }
 
-            return if (possibleMoves.isEmpty()) Pair(Pair(-1, -1), bestScore)
+            return if (possibleMoves.isEmpty()) Pair(Coordinate(-1, -1), bestScore)
             else Pair(bestMove ?: possibleMoves.random(), bestScore)
         }
 
-        val bestMoves = mutableListOf<Pair<Int, Int>>()
+        val bestMoves = mutableListOf<Coordinate>()
         var bestValue = if (isMyTurn) Int.MIN_VALUE else Int.MAX_VALUE
 
         for (move in possibleMoves) {

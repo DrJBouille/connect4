@@ -1,0 +1,17 @@
+services:
+  mongodb:
+    image: mongo:6.0
+    container_name: mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: connect4
+      MONGO_INITDB_ROOT_PASSWORD: f820YaWj06I3Y5vYe8lb
+      MONGO_INITDB_DATABASE: connect4
+    volumes:
+      - "mongo_data:/data/db"
+      - "./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro"
+
+volumes:
+  mongo_data:
