@@ -1,0 +1,5 @@
+@switch (doesRedWin) {
+  @case (true) { <span class="inline-block w-4 h-4 rounded-full bg-red-500" title="Failed"></span> }
+  @case (false) { <span class="inline-block w-4 h-4 rounded-full bg-yellow-300" title="Paused"></span> }
+  @default { <span class="inline-block w-4 h-4 rounded-full bg-gray-200" title="Not Started"></span> }
+}
