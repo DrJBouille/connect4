@@ -7,7 +7,7 @@ export class Jobs {
     public jobsId: string,
     public batchId: string,
     public jobParameter: JobParameters,
-    public stats: Stats,
+    public stats: Stats | null,
     public status: Status
   ) {
   }
