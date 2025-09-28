@@ -1,6 +1,6 @@
 package com.connect4.controller
 
-import com.connect4.model.DTO.NotificationDTO
+import com.connect4.model.DTO.JobsIdDTO
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.websocket.OnClose
@@ -12,18 +12,17 @@ import jakarta.websocket.server.ServerEndpoint
 
 @ApplicationScoped
 @ServerEndpoint("/ws/jobs")
-class JobsResultsNotifier {
-  private val sessions: MutableSet<Session> = mutableSetOf()
+class JobsNotifier {
+  private val sessionsToBatchId: MutableMap<Session, String> = mutableMapOf()
 
   @OnOpen
   fun onOpen(session: Session) {
-    sessions.add(session)
     println("New connection established : ${session.id}")
   }
 
   @OnClose
   fun onClose(session: Session) {
-    sessions.remove(session)
+    sessionsToBatchId.remove(session)
     println("Connection closed : ${session.id}")
   }
 
@@ -34,13 +33,15 @@ class JobsResultsNotifier {
 
   @OnMessage
   fun onMessage(session: Session, message: String) {
+    val json = jacksonObjectMapper().readTree(message)
     println("Message received : $message")
-    session.asyncRemote.sendText(message)
+    val id = json.get("id").asText()
+    sessionsToBatchId[session] = id
   }
 
   fun broadcast(batchId: String, jobsId: String) {
-    val jsonNotification = jacksonObjectMapper().writeValueAsString(NotificationDTO(batchId, jobsId))
-
-    sessions.filter { it.isOpen }.forEach { it.asyncRemote.sendText(jsonNotification) }
+    val json = jacksonObjectMapper().writeValueAsString(JobsIdDTO(jobsId))
+    sessionsToBatchId.forEach { session, jobId ->}
+    sessionsToBatchId.filter { (session, subscribedBatchId) -> session.isOpen && subscribedBatchId == batchId }.forEach { (session, _) -> session.asyncRemote.sendText(json) }
   }
 }
