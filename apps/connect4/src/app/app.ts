@@ -1,61 +1,12 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {JobsService} from "./jobs-service/jobs-service";
-import {Observable} from "rxjs";
-import {BatchParameters} from "./jobs-service/BatchParameters";
-import {JobParameter} from "./jobs-service/JobParameter";
-import {Jobs} from "./jobs-service/Jobs";
-import {AsyncPipe} from "@angular/common";
-import {FormsModule} from "@angular/forms";
-import {MatFormField, MatLabel} from "@angular/material/form-field";
-import {MatInput} from "@angular/material/input";
-import {RemainingTasks} from "./jobs-service/RemainingTasks";
+import {Component} from '@angular/core';
+import {RouterOutlet} from "@angular/router";
 
 @Component({
   imports: [
-    AsyncPipe,
-    FormsModule,
-    MatFormField,
-    MatLabel,
-    MatInput
+    RouterOutlet
   ],
   selector: 'app-root',
   templateUrl: './app.html',
   styleUrl: './app.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class App implements OnInit {
-  nbOfProcess = 10;
-  redDeepness = 3;
-  yellowDeepness = 3;
-
-  jobsArray$: Observable<Jobs[]>;
-  remainingTasks$: Observable<RemainingTasks>;
-
-  constructor(private jobsService: JobsService) {
-    this.jobsArray$ = this.jobsService.jobsArray$;
-    this.remainingTasks$ = this.jobsService.remainingTasks$;
-  }
-
-  ngOnInit() {
-    this.jobsService.connect('ws://localhost:8080/ws/jobs');
-  }
-
-  startBatch() {
-    this.jobsService.startBatch(new BatchParameters(this.nbOfProcess, new JobParameter(this.redDeepness, this.yellowDeepness))).subscribe();
-  }
-
-  msToTime(ms: number): string {
-    if (ms == null || ms <= 0) return '00:00:00';
-
-    const totalSeconds = Math.floor(ms / 1000);
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-
-    return `${this.pad(hours)}:${this.pad(minutes)}:${this.pad(seconds)}`;
-  }
-
-  pad(n: number): string {
-    return n < 10 ? '0' + n : n.toString();
-  }
-}
+export class App {}
