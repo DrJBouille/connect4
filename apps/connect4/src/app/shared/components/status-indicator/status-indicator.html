@@ -1,0 +1,11 @@
+@switch (status) {
+  @case(Status.NOT_STARTED) { <span class="inline-block w-4 h-4 rounded-full bg-gray-200" title="Not Started"></span> }
+  @case(Status.PENDING) { <span class="inline-block w-4 h-4 rounded-full bg-orange-500" title="Pending"></span> }
+  @case(Status.RUNNING) { <span class="inline-block w-4 h-4 rounded-full bg-blue-400" title="Running"></span> }
+  @case(Status.FINISHED) { <span class="inline-block w-4 h-4 rounded-full bg-green-500" title="Finished"></span> }
+  @case(Status.FAILED) { <span class="inline-block w-4 h-4 rounded-full bg-red-500" title="Failed"></span> }
+  @case(Status.CANCELLED) { <span class="inline-block w-4 h-4 rounded-full bg-gray-500" title="Cancelled"></span> }
+  @case(Status.PAUSED) { <span class="inline-block w-4 h-4 rounded-full bg-yellow-300" title="Paused"></span> }
+  @default { <span class="inline-block w-4 h-4 rounded-full bg-gray-200"></span> }
+}
+
