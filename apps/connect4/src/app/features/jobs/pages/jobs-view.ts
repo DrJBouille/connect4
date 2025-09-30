@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 import {AsyncPipe} from "@angular/common";
 import {FormsModule} from "@angular/forms";
-import {Observable, Subscription} from "rxjs";
+import {Observable, retry, Subscription} from "rxjs";
 import {Jobs} from "../models/Jobs";
 import {RemainingTasks} from "../models/RemainingTasks";
 import {JobsService} from "../services/jobs-service/jobs-service";
@@ -37,6 +37,7 @@ export class JobsView implements OnDestroy {
 
   winnerValues: number[] = [0, 0, 0];
   movesTimeValue: {x: number[], y: number[]} = {x: [0], y: [0]};
+  averageGameTime: string = '~';
 
   currentJob!: Jobs;
   redDeepness = '~';
@@ -52,11 +53,11 @@ export class JobsView implements OnDestroy {
     this.remainingTasks$ = this.jobsService.remainingTasks$;
 
     this.jobsArraySubscription = this.jobsArray$.subscribe(jobs => {
-      if (jobs.length == 0) return;
-      this.currentJob = this.currentJob && jobs.find(j => j.jobsId === this.currentJob.jobsId) || jobs[0];
+      if (jobs.length > 0) this.currentJob = this.currentJob && jobs.find(j => j.jobsId === this.currentJob.jobsId) || jobs[0];
 
       this.winnerValues = this.getWinnerValues(jobs);
       this.movesTimeValue = this.getMovesTimeValues(jobs);
+      this.averageGameTime = this.getAverageGameTime(jobs);
 
       if (!this.currentJob.stats) return;
       this.redDeepness = this.currentJob.stats.redDeepness.toString();
@@ -113,6 +114,16 @@ export class JobsView implements OnDestroy {
     const draws = jobs.filter(job => job.stats?.doesRedWin == null).length;
 
     return [redWins, yellowWins, draws];
+  }
+
+  getAverageGameTime(jobs: Jobs[]) {
+    if (!jobs[0].stats) return '~';
+
+    const timeInMillis = Math.round(jobs.map(job => job.stats!.gameTime).reduce((sum, value) => sum + value) / jobs.length);
+
+
+    if (timeInMillis < 1000) return `${timeInMillis} ms`;
+    else return `${timeInMillis / 1000} s`;
   }
 
   ngOnDestroy() {
