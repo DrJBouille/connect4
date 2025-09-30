@@ -1,7 +1,7 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 import {AsyncPipe} from "@angular/common";
 import {FormsModule} from "@angular/forms";
-import {map, Observable, Subscription} from "rxjs";
+import {Observable, Subscription} from "rxjs";
 import {Jobs} from "../models/Jobs";
 import {RemainingTasks} from "../models/RemainingTasks";
 import {JobsService} from "../services/jobs-service/jobs-service";
@@ -11,6 +11,7 @@ import {WinnerIndicator} from "../../../shared/components/winner-indicator/winne
 import {SimpleValueInformation} from "../../../shared/components/simple-value-information/simple-value-information";
 import {PlotlyPieCharts} from "../../../shared/components/plotly-pie-charts/plotly-pie-charts";
 import {PlotlyLineCharts} from "../../../shared/components/plotly-line-charts/plotly-line-charts";
+import {GameViewer} from "../components/game-viewer/game-viewer";
 
 @Component({
   selector: 'app-jobs-view',
@@ -21,13 +22,14 @@ import {PlotlyLineCharts} from "../../../shared/components/plotly-line-charts/pl
     WinnerIndicator,
     SimpleValueInformation,
     PlotlyPieCharts,
-    PlotlyLineCharts
+    PlotlyLineCharts,
+    GameViewer
   ],
   templateUrl: './jobs-view.html',
   styleUrl: './jobs-view.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class JobsView implements OnDestroy, AfterViewInit {
+export class JobsView implements OnDestroy {
   jobsArray$: Observable<Jobs[]>;
   remainingTasks$: Observable<RemainingTasks>;
 
@@ -36,7 +38,7 @@ export class JobsView implements OnDestroy, AfterViewInit {
   winnerValues: number[] = [0, 0, 0];
   movesTimeValue: {x: number[], y: number[]} = {x: [0], y: [0]};
 
-  currentJob?: Jobs;
+  currentJob!: Jobs;
   redDeepness = '~';
   yellowDeepness = '~';
 
@@ -48,6 +50,18 @@ export class JobsView implements OnDestroy, AfterViewInit {
 
     this.jobsArray$ = this.jobsService.jobsArray$;
     this.remainingTasks$ = this.jobsService.remainingTasks$;
+
+    this.jobsArraySubscription = this.jobsArray$.subscribe(jobs => {
+      if (jobs.length == 0) return;
+      this.currentJob = this.currentJob && jobs.find(j => j.jobsId === this.currentJob.jobsId) || jobs[0];
+
+      this.winnerValues = this.getWinnerValues(jobs);
+      this.movesTimeValue = this.getMovesTimeValues(jobs);
+
+      if (!this.currentJob.stats) return;
+      this.redDeepness = this.currentJob.stats.redDeepness.toString();
+      this.yellowDeepness = this.currentJob.stats.yellowDeepness.toString();
+    });
   }
 
   msToTime(ms: number): string {
@@ -99,20 +113,6 @@ export class JobsView implements OnDestroy, AfterViewInit {
     const draws = jobs.filter(job => job.stats?.doesRedWin == null).length;
 
     return [redWins, yellowWins, draws];
-  }
-
-  ngAfterViewInit() {
-    this.jobsArraySubscription = this.jobsArray$.subscribe(jobs => {
-      if (jobs.length == 0) return;
-      this.currentJob = this.currentJob && jobs.find(j => j.jobsId === this.currentJob?.jobsId) || jobs[0];
-
-      this.winnerValues = this.getWinnerValues(jobs);
-      this.movesTimeValue = this.getMovesTimeValues(jobs);
-
-      if (!this.currentJob.stats) return;
-      this.redDeepness = this.currentJob.stats.redDeepness.toString();
-      this.yellowDeepness = this.currentJob.stats.yellowDeepness.toString();
-    });
   }
 
   ngOnDestroy() {

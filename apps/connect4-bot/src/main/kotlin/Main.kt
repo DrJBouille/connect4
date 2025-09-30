@@ -33,7 +33,7 @@ fun main(args: Array<String>) {
 
             board.addDiscs(coordinate, isRedTurn)
 
-            stats.moves.add(Move(timeToMove, coordinate, board.board))
+            stats.moves.add(Move(timeToMove, coordinate, board.board.toMutableList()))
 
             if (board.doesPlayerWin(coordinate, isRedTurn)) {
               doesRedWin = isRedTurn

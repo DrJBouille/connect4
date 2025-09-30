@@ -1,0 +1,29 @@
+<body class="w-full h-full flex justify-between">
+
+<button class="hover:bg-neutral-800 px-2" (click)="changeMoveId(0)">
+  <mat-icon aria-label="previous" fontIcon="keyboard_double_arrow_left"></mat-icon>
+</button>
+
+<button class="hover:bg-neutral-800 px-2" (click)="changeMoveId(this.moveId - 1)">
+  <mat-icon aria-label="previous" fontIcon="chevron_left"></mat-icon>
+</button>
+
+<div class="w-3/4 max-h-full grid grid-cols-7 grid-rows-6 gap-4 border border-zinc-700 rounded-md p-4">
+  @for (line of boardReversed; track line) {
+    @for (paw of line; track paw) {
+      @if (paw == null) { <span class="inline-block aspect-square rounded-md border-2 border-gray-200" title="Not Started"></span> }
+      @else if (paw) { <span class="inline-block aspect-square rounded-md bg-red-500" title="Red paw"></span> }
+      @else { <span class="inline-block aspect-square rounded-md bg-yellow-300" title="Yellow paw"></span> }
+    }
+  }
+</div>
+
+<button class="hover:bg-neutral-800 px-2" (click)="changeMoveId(this.moveId + 1)">
+  <mat-icon aria-label="previous" fontIcon="chevron_right"></mat-icon>
+</button>
+
+<button class="hover:bg-neutral-800 px-2" (click)="changeMoveId(this.moves.length - 1)">
+  <mat-icon aria-label="previous" fontIcon="keyboard_double_arrow_right"></mat-icon>
+</button>
+
+</body>

@@ -1,4 +1,4 @@
-<body class="h-screen bg-neutral-950 text-gray-100 font-sans p-10 min-h-screen grid grid grid-cols-8 grid-rows-8 gap-4">
+<body class="h-screen bg-neutral-950 text-gray-100 font-sans p-10 min-h-screen grid grid grid-cols-8 grid-rows-8 gap-5">
 
 <app-simple-value-information
   [title]="'Not Started jobs'"
@@ -25,20 +25,9 @@
   [value]="((remainingTasks$ | async)?.failedJobs || 0).toString()"
 />
 
-<div class="bg-neutral-900 border border-zinc-800 rounded-lg shadow-md overflow-x-auto p-4 col-span-2 row-span-2">
-  <app-plotly-pie-charts
-
-    [values]="winnerValues ?? [0, 0, 0]"
-    [colors]="['#ef4444', '#fde047', '#e5e7eb']"
-    [labels]="['Red wins', 'Yellow wins', 'Draws']"
-  />
+<div class="bg-neutral-900 border border-zinc-800 rounded-lg shadow-md overflow-x-auto p-4 col-span-3 row-span-4">
+  @if (currentJob.stats) { <app-game-viewer [moves]="currentJob.stats.moves"></app-game-viewer> }
 </div>
-
-<app-simple-value-information
-  [title]="'Red deepness'"
-  [value]="redDeepness"
-/>
-
 
 <div class="bg-neutral-900 border border-zinc-800 rounded-lg shadow-md overflow-x-auto p-4 col-span-5 row-span-4">
   <table class="min-w-full border border-zinc-800 rounded-md divide-y divide-zinc-800 overflow-hidden">
@@ -62,6 +51,28 @@
   </table>
 </div>
 
+<div class="bg-neutral-900 border border-zinc-800 rounded-lg shadow-md overflow-x-auto p-4 col-span-2 row-span-2">
+  <app-plotly-pie-charts
+
+    [values]="winnerValues"
+    [colors]="['#ef4444', '#fde047', '#e5e7eb']"
+    [labels]="['Red wins', 'Yellow wins', 'Draws']"
+  />
+</div>
+
+<app-simple-value-information
+  [title]="'Red deepness'"
+  [value]="redDeepness"
+/>
+
+<div class="bg-neutral-900 border border-zinc-800 rounded-lg shadow-md overflow-x-auto p-4 col-span-2 row-span-3">
+
+</div>
+
+<div class="bg-neutral-900 border border-zinc-800 rounded-lg shadow-md overflow-x-auto p-4 col-span-3 row-span-3">
+
+</div>
+
 <app-simple-value-information
   [title]="'Yellow deepness'"
   [value]="yellowDeepness"
@@ -73,6 +84,14 @@
     [y]="movesTimeValue.y"
     [title]="'Moves time'"
   />
+</div>
+
+<div class="bg-neutral-900 border border-zinc-800 rounded-lg shadow-md overflow-x-auto p-4">
+
+</div>
+
+<div class="bg-neutral-900 border border-zinc-800 rounded-lg shadow-md overflow-x-auto p-4">
+
 </div>
 
 </body>
