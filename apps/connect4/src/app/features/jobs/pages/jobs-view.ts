@@ -47,6 +47,7 @@ export class JobsView implements OnDestroy {
   globalAverageGameTime = '~';
 
   selectedJob: Jobs | null = null;
+  selectedJobId: string | null = null;
 
   constructor(private jobsService: JobsService, private route: ActivatedRoute) {
     this.route.paramMap.subscribe(params => {
@@ -59,12 +60,14 @@ export class JobsView implements OnDestroy {
 
     this.jobsArraySubscription = this.jobsArray$.subscribe(jobs => {
       if (jobs.length <= 0) return;
+      this.selectedJob = null;
 
       this.winnerValues = this.getWinnerValues(jobs);
       this.movesTimeValue = this.getMovesTimeValues(jobs);
       this.averageGameTime = this.getAverageGameTime(jobs);
 
-      this.selectedJob = jobs[0];
+      if (this.selectedJobId) this.selectedJob = jobs.find(job => job.jobsId === this.selectedJobId) || null;
+      else this.selectedJob = jobs[0];
 
       if (!this.selectedJob || !this.selectedJob.stats) return;
       this.globalStatsSubscription = this.jobsService.getGlobalStats(this.selectedJob.stats.redDeepness, this.selectedJob.stats.yellowDeepness).subscribe(globalStats => {
@@ -97,6 +100,7 @@ export class JobsView implements OnDestroy {
   }
 
   selectJob(jobsId: string) {
+    this.selectedJobId = jobsId;
     this.jobsArraySubscription = this.jobsArray$.subscribe(jobs => this.selectedJob = jobs.find(job => job.jobsId === jobsId) || null);
   }
 

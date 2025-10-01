@@ -54,7 +54,7 @@
         <td class="px-4 py-3">{{element.jobsId}}</td>
         <td class="px-4">{{element.stats ? msToTime(element.stats.gameTime) : 'NOT FINISHED'}}</td>
         <td class="px-4"><app-winner-indicator [doesRedWin]="element.stats ? element.stats.doesRedWin : null"></app-winner-indicator></td>
-        <td class="px-4"><button class="underline font-semibold" (click)="selectJob(element.jobsId)">view</button></td>
+        <td class="px-4"><button class="underline font-semibold" (click)="selectJob(element.jobsId)">details</button></td>
       </tr>
     }
   </table>
