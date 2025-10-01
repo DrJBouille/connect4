@@ -44,4 +44,11 @@ class BatchController {
   fun getRemainingTasks(): Response {
     return Response.ok().entity(batchesService.getRemainingTasks()).build()
   }
+
+  @GET
+  @Path("/stats/{redDeepness}/{yellowDeepness}")
+  fun getRemainingTasks(@PathParam("redDeepness") redDeepness: Int, @PathParam("yellowDeepness") yellowDeepness: Int): Response {
+    val globalStats = batchesService.getGlobalStats(redDeepness, yellowDeepness) ?: return Response.status(Response.Status.NO_CONTENT).build()
+    return Response.ok().entity(globalStats).build()
+  }
 }

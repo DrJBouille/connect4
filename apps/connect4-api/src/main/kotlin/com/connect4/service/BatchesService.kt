@@ -4,6 +4,7 @@ import com.connect4.controller.BatchesNotifier
 import com.connect4.controller.JobsNotifier
 import com.connect4.model.Batch
 import com.connect4.model.DTO.BatchParameters
+import com.connect4.model.GlobalStats
 import com.connect4.model.Jobs
 import com.connect4.model.RemainingTasks
 import com.connect4.model.Status
@@ -137,6 +138,43 @@ class BatchesService {
       notStartedJobs,
       runningJobs,
       finishedJobs
+    )
+  }
+
+  fun getGlobalStats(redDeepness: Int, yellowDeepness: Int): GlobalStats? {
+    val batches = batchesRepository.findByBatchJobParameter(redDeepness, yellowDeepness)
+
+    if (batches.isEmpty()) return null
+
+    val gamesTime = mutableListOf<Long>()
+    val moves = mutableListOf<Int>()
+    var redWins = 0
+    var yellowWins = 0
+    var draws = 0
+
+    batches.forEach {
+      batch -> batch.jobs.forEach {
+        job -> if (job.status == Status.FINISHED) {
+          gamesTime.add(job.stats!!.gameTime)
+          moves.add(job.stats!!.moves.size)
+
+          if (job.stats!!.doesRedWin == null) draws++
+          else if (job.stats!!.doesRedWin!!) redWins++
+          else yellowWins++
+        }
+      }
+    }
+
+    return GlobalStats(
+      gamesTime.average(),
+      gamesTime.min(),
+      gamesTime.max(),
+      moves.average(),
+      moves.min(),
+      moves.max(),
+      redWins,
+      yellowWins,
+      draws
     )
   }
 }

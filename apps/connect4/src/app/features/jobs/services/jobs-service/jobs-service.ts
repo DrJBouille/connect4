@@ -6,6 +6,7 @@ import {RemainingTasks} from "../../models/RemainingTasks";
 import {WebsocketService} from "../../../../core/websocket/websocket-servicre";
 import {IdDTO} from "../../models/IdDTO";
 import {Status} from "../../../../shared/models/Status";
+import {GlobalStats} from "../../../batches/models/GlobalStats";
 
 @Injectable({
   providedIn: 'root'
@@ -67,6 +68,10 @@ export class JobsService implements OnDestroy {
 
   private getJobs(batchId: string) {
     return this.http.get<Jobs[]>(`http://localhost:8080/api/jobs/${batchId}`);
+  }
+
+  getGlobalStats(redDeepness: number, yellowDeepness: number) {
+    return this.http.get<GlobalStats>(`http://localhost:8080/api/batches/stats/${redDeepness}/${yellowDeepness}`);
   }
 
   private getRemainingTasks() {

@@ -12,6 +12,7 @@ import {SimpleValueInformation} from "../../../shared/components/simple-value-in
 import {PlotlyPieCharts} from "../../../shared/components/plotly-pie-charts/plotly-pie-charts";
 import {PlotlyLineCharts} from "../../../shared/components/plotly-line-charts/plotly-line-charts";
 import {GameViewer} from "../components/game-viewer/game-viewer";
+import {GlobalStats} from "../../batches/models/GlobalStats";
 
 @Component({
   selector: 'app-jobs-view',
@@ -34,6 +35,7 @@ export class JobsView implements OnDestroy {
   remainingTasks$: Observable<RemainingTasks>;
 
   jobsArraySubscription?: Subscription;
+  globalStats?: GlobalStats;
 
   winnerValues: number[] = [0, 0, 0];
   movesTimeValue: {x: number[], y: number[]} = {x: [0], y: [0]};
@@ -42,6 +44,7 @@ export class JobsView implements OnDestroy {
   currentJob!: Jobs;
   redDeepness = '~';
   yellowDeepness = '~';
+  globalAverageGameTime = '~';
 
   constructor(private jobsService: JobsService, private route: ActivatedRoute) {
     this.route.paramMap.subscribe(params => {
@@ -59,7 +62,14 @@ export class JobsView implements OnDestroy {
       this.movesTimeValue = this.getMovesTimeValues(jobs);
       this.averageGameTime = this.getAverageGameTime(jobs);
 
-      if (!this.currentJob.stats) return;
+      if (!this.currentJob || !this.currentJob.stats) return;
+      this.jobsService.getGlobalStats(this.currentJob.stats.redDeepness, this.currentJob.stats.yellowDeepness).subscribe(globalStats => {
+        this.globalStats = globalStats;
+        console.log(globalStats.averageGameTime)
+
+        if (globalStats.averageGameTime < 1000) this.globalAverageGameTime = `${globalStats.averageGameTime} ms`;
+        else this.globalAverageGameTime = `${globalStats.averageGameTime / 1000} s`;
+      });
       this.redDeepness = this.currentJob.stats.redDeepness.toString();
       this.yellowDeepness = this.currentJob.stats.yellowDeepness.toString();
     });
@@ -117,7 +127,7 @@ export class JobsView implements OnDestroy {
   }
 
   getAverageGameTime(jobs: Jobs[]) {
-    if (!jobs[0].stats) return '~';
+    if (jobs.length == 0 || !jobs[0].stats) return '~';
 
     const timeInMillis = Math.round(jobs.map(job => job.stats!.gameTime).reduce((sum, value) => sum + value) / jobs.length);
 

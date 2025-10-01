@@ -5,6 +5,7 @@ import {BehaviorSubject, map, Subject, Subscription} from "rxjs";
 import {Batch} from "../../models/Batch";
 import {BatchParameters} from "../../models/BatchParameters";
 import {RemainingTasks} from "../../models/RemainingTasks";
+import {GlobalStats} from "../../models/GlobalStats";
 
 @Injectable({
   providedIn: 'root'
@@ -61,6 +62,10 @@ export class BatchesService implements OnDestroy{
 
   getBatches() {
     return this.http.get<Batch[]>('http://localhost:8080/api/batches');
+  }
+
+  getGlobalStats(redDeepness: number, yellowDeepness: number) {
+    return this.http.get<GlobalStats>(`http://localhost:8080/api/batches/stats/${redDeepness}/${yellowDeepness}`);
   }
 
   private getRemainingTasks() {
