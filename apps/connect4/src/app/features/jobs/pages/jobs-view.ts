@@ -35,16 +35,18 @@ export class JobsView implements OnDestroy {
   remainingTasks$: Observable<RemainingTasks>;
 
   jobsArraySubscription?: Subscription;
-  globalStats?: GlobalStats;
+  globalStatsSubscription?: Subscription;
 
   winnerValues: number[] = [0, 0, 0];
   movesTimeValue: {x: number[], y: number[]} = {x: [0], y: [0]};
   averageGameTime: string = '~';
 
-  currentJob!: Jobs;
+  globalStats?: GlobalStats;
   redDeepness = '~';
   yellowDeepness = '~';
   globalAverageGameTime = '~';
+
+  selectedJob: Jobs | null = null;
 
   constructor(private jobsService: JobsService, private route: ActivatedRoute) {
     this.route.paramMap.subscribe(params => {
@@ -56,22 +58,26 @@ export class JobsView implements OnDestroy {
     this.remainingTasks$ = this.jobsService.remainingTasks$;
 
     this.jobsArraySubscription = this.jobsArray$.subscribe(jobs => {
-      if (jobs.length > 0) this.currentJob = this.currentJob && jobs.find(j => j.jobsId === this.currentJob.jobsId) || jobs[0];
+      if (jobs.length <= 0) return;
 
       this.winnerValues = this.getWinnerValues(jobs);
       this.movesTimeValue = this.getMovesTimeValues(jobs);
       this.averageGameTime = this.getAverageGameTime(jobs);
 
-      if (!this.currentJob || !this.currentJob.stats) return;
-      this.jobsService.getGlobalStats(this.currentJob.stats.redDeepness, this.currentJob.stats.yellowDeepness).subscribe(globalStats => {
-        this.globalStats = globalStats;
-        console.log(globalStats.averageGameTime)
+      this.selectedJob = jobs[0];
 
-        if (globalStats.averageGameTime < 1000) this.globalAverageGameTime = `${globalStats.averageGameTime} ms`;
-        else this.globalAverageGameTime = `${globalStats.averageGameTime / 1000} s`;
+      if (!this.selectedJob || !this.selectedJob.stats) return;
+      this.globalStatsSubscription = this.jobsService.getGlobalStats(this.selectedJob.stats.redDeepness, this.selectedJob.stats.yellowDeepness).subscribe(globalStats => {
+        this.globalStats = globalStats;
+
+        const timeInMillis = Math.round((jobs.map(job => job.stats!.gameTime).reduce((sum, value) => sum + value) / jobs.length) - globalStats.averageGameTime);
+
+        if (timeInMillis < 1000) this.globalAverageGameTime = `${timeInMillis} ms`;
+        else this.globalAverageGameTime = `${timeInMillis / 1000} s`;
       });
-      this.redDeepness = this.currentJob.stats.redDeepness.toString();
-      this.yellowDeepness = this.currentJob.stats.yellowDeepness.toString();
+
+      this.redDeepness = this.selectedJob.stats.redDeepness.toString();
+      this.yellowDeepness = this.selectedJob.stats.yellowDeepness.toString();
     });
   }
 
@@ -88,6 +94,10 @@ export class JobsView implements OnDestroy {
 
   pad(n: number): string {
     return n < 10 ? '0' + n : n.toString();
+  }
+
+  selectJob(jobsId: string) {
+    this.jobsArraySubscription = this.jobsArray$.subscribe(jobs => this.selectedJob = jobs.find(job => job.jobsId === jobsId) || null);
   }
 
   getMovesTimeValues(jobs: Jobs[]) {
@@ -127,10 +137,7 @@ export class JobsView implements OnDestroy {
   }
 
   getAverageGameTime(jobs: Jobs[]) {
-    if (jobs.length == 0 || !jobs[0].stats) return '~';
-
     const timeInMillis = Math.round(jobs.map(job => job.stats!.gameTime).reduce((sum, value) => sum + value) / jobs.length);
-
 
     if (timeInMillis < 1000) return `${timeInMillis} ms`;
     else return `${timeInMillis / 1000} s`;
@@ -138,5 +145,6 @@ export class JobsView implements OnDestroy {
 
   ngOnDestroy() {
     this.jobsArraySubscription?.unsubscribe();
+    this.globalStatsSubscription?.unsubscribe();
   }
 }

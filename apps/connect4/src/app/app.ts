@@ -1,10 +1,9 @@
 import {Component} from '@angular/core';
-import {RouterOutlet} from "@angular/router";
+import {RouterLink, RouterOutlet} from "@angular/router";
+import {MatIcon} from "@angular/material/icon";
 
 @Component({
-  imports: [
-    RouterOutlet
-  ],
+  imports: [RouterOutlet, MatIcon, RouterLink],
   selector: 'app-root',
   templateUrl: './app.html',
   styleUrl: './app.scss',
