@@ -7,6 +7,7 @@ data class GlobalStats(
   val averageMoves: Double,
   val minMoves: Int,
   val maxMoves: Int,
+  val movesTimeMap: Map<Int, Double>,
   val redWins: Int,
   val yellowWins: Int,
   val draws: Int,

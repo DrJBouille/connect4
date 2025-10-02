@@ -24,7 +24,6 @@ class BatchesService {
   @Inject private lateinit var batchesRepository: BatchesRepository
   @Inject private lateinit var jobsNotifier: JobsNotifier
   @Inject private lateinit var batchesNotifier: BatchesNotifier
-  @Inject private lateinit var jobsService: JobsService
   @Inject private lateinit var dockerService: DockerService
 
   val batchQueue: Queue<Batch> = LinkedList()
@@ -138,43 +137,6 @@ class BatchesService {
       notStartedJobs,
       runningJobs,
       finishedJobs
-    )
-  }
-
-  fun getGlobalStats(redDeepness: Int, yellowDeepness: Int): GlobalStats? {
-    val batches = batchesRepository.findByBatchJobParameter(redDeepness, yellowDeepness)
-
-    if (batches.isEmpty()) return null
-
-    val gamesTime = mutableListOf<Long>()
-    val moves = mutableListOf<Int>()
-    var redWins = 0
-    var yellowWins = 0
-    var draws = 0
-
-    batches.forEach {
-      batch -> batch.jobs.forEach {
-        job -> if (job.status == Status.FINISHED) {
-          gamesTime.add(job.stats!!.gameTime)
-          moves.add(job.stats!!.moves.size)
-
-          if (job.stats!!.doesRedWin == null) draws++
-          else if (job.stats!!.doesRedWin!!) redWins++
-          else yellowWins++
-        }
-      }
-    }
-
-    return GlobalStats(
-      gamesTime.average(),
-      gamesTime.min(),
-      gamesTime.max(),
-      moves.average(),
-      moves.min(),
-      moves.max(),
-      redWins,
-      yellowWins,
-      draws
     )
   }
 }
