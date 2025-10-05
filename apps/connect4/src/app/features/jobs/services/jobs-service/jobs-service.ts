@@ -71,7 +71,7 @@ export class JobsService implements OnDestroy {
   }
 
   getGlobalStats(redDeepness: number, yellowDeepness: number) {
-    return this.http.get<GlobalStats>(`http://localhost:8080/api/batches/stats/${redDeepness}/${yellowDeepness}`);
+    return this.http.get<GlobalStats>(`http://localhost:8080/api/stats/stats/${redDeepness}/${yellowDeepness}`);
   }
 
   private getRemainingTasks() {
