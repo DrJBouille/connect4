@@ -7,5 +7,5 @@ interface Bot {
     val isRed: Boolean
     val deepness: Int
 
-    fun getBestMove(board: Board, isMyTurn: Boolean = true, actualDeepness: Int = 1): Pair<Coordinate, Int>
+    fun getBestMove(board: Board, actualDeepness: Int = 1, isActuallyRedTurn: Boolean = this.isRed): Pair<Coordinate, Int>
 }
