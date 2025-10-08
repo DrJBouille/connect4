@@ -5,7 +5,7 @@ import org.example.board.Board
 
 interface Bot {
     val isRed: Boolean
-    val deepness: Int
+    val depth: Int
 
-    fun getBestMove(board: Board, actualDeepness: Int = 1, isActuallyRedTurn: Boolean = this.isRed): Pair<Coordinate, Int>
+    fun getMinmax(board: Board, maximizingPlayer: Boolean = true, isActuallyRed: Boolean = isRed, actualDepth: Int = depth): Pair<Coordinate, Int>
 }

@@ -36,7 +36,7 @@ class StatsService {
 
         for ((index, move) in job.stats!!.moves.withIndex()) {
           totalTime += move.time
-          if (movesTime.getOrNull(index) == null) movesTime[index] = mutableListOf(move.time)
+          if (movesTime.getOrNull(index) == null) movesTime.add(index, mutableListOf(move.time))
           else movesTime[index].add(move.time)
         }
 

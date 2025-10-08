@@ -3,9 +3,9 @@ package org.example.utils
 import org.example.Coordinate
 
 fun checkDiscsOnARow(
-    board: MutableList<MutableList<Boolean?>>,
-    coordinate: Coordinate,
-    isRed: Boolean
+  board: MutableList<MutableList<Int>>,
+  coordinate: Coordinate,
+  isRed: Boolean
 ): Int {
     val row = coordinate.y
     val col = coordinate.x
@@ -23,16 +23,17 @@ fun checkDiscsOnARow(
 }
 
 fun countInDirection(
-    board: List<List<Boolean?>>,
-    row: Int, col: Int,
-    dr: Int, dc: Int,
-    isRed: Boolean
+  board: List<List<Int>>,
+  row: Int, col: Int,
+  dr: Int, dc: Int,
+  isRed: Boolean
 ): Int {
+    val piece = if (isRed) 1 else 2
     var r = row + dr
     var c = col + dc
     var count = 0
 
-    while (r in board.indices && c in board[r].indices && board[r][c] == isRed) {
+    while (r in board.indices && c in board[r].indices && board[r][c] == piece) {
         count++
         r += dr
         c += dc
