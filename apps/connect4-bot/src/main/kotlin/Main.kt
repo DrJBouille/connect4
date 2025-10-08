@@ -7,7 +7,7 @@ import org.example.bot.BotImpl
 import kotlin.system.measureTimeMillis
 
 fun main(args: Array<String>) {
-    val redDeepness = args.getOrNull(0)?.toIntOrNull() ?: 5
+    val redDeepness = args.getOrNull(0)?.toIntOrNull() ?: 3
     val yellowDeepness = args.getOrNull(1)?.toIntOrNull() ?: 3
 
     val stats = Stats(redDeepness = redDeepness, yellowDeepness = yellowDeepness)
@@ -20,21 +20,22 @@ fun main(args: Array<String>) {
         val yellowBot = BotImpl(false, yellowDeepness)
 
         while (true) {
-            if (board.board.none {null in it}) break
+            if (board.board.none {0 in it}) break
 
             var coordinate: Coordinate
             val timeToMove = measureTimeMillis {
-                val value = if (isRedTurn) redBot.getBestMove(board) else yellowBot.getBestMove(board)
+                val value = if (isRedTurn) redBot.getMinmax(board) else yellowBot.getMinmax(board)
                 coordinate = value.first
             }
 
             val possibleMoves = board.getPossibleMoves()
 
-            if (!possibleMoves.contains(coordinate)) continue
+            if (!possibleMoves.contains(coordinate)) break
+
 
             board.addDiscs(coordinate, isRedTurn)
 
-            stats.moves.add(Move(timeToMove, coordinate, board.board.map { it.toMutableList() }.toMutableList()))
+            stats.moves.add(Move(timeToMove, isRedTurn, coordinate))
 
             if (board.doesPlayerWin(coordinate, isRedTurn)) {
               doesRedWin = isRedTurn

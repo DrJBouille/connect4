@@ -10,8 +10,8 @@ data class Stats(
 
 data class Move(
     var time: Long = 0,
+    var isRedTurn: Boolean = true,
     var coordinate: Coordinate = Coordinate(),
-    var board: MutableList<MutableList<Boolean?>> = mutableListOf()
 )
 
 data class Coordinate(

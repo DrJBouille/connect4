@@ -11,8 +11,8 @@ export class Stats {
 
 export class Move {
   constructor(
-    public board: [boolean | null][],
     public coordinate: Coordinate,
+    public isRedTurn: Boolean,
     public time: number
   ) {
   }
