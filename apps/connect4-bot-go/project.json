@@ -1,0 +1,20 @@
+{
+  "name": "connect4-bot-go",
+  "sourceRoot": "apps/connect4-bot-go",
+  "projectType": "application",
+  "targets": {
+    "docker-build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "docker build --no-cache -t connect4-bot-go .",
+        "cwd": "apps/connect4-bot-go"
+      }
+    },
+    "docker-run": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "docker run -p 8080:8080 connect4-bot-go:latest 5 3"
+      }
+    }
+  }
+}
