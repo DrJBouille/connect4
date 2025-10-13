@@ -1,6 +1,6 @@
 package com.connect4.controller
 
-import com.connect4.model.DTO.JobsIdDTO
+import com.connect4.model.dto.JobsIdDTO
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.websocket.OnClose

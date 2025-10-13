@@ -1,6 +1,6 @@
 package com.connect4.controller
 
-import com.connect4.model.DTO.BatchIdDTO
+import com.connect4.model.dto.BatchId
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.websocket.OnClose
@@ -39,7 +39,7 @@ class BatchesNotifier {
   }
 
   fun broadcast(batchId: String) {
-    val json = jacksonObjectMapper().writeValueAsString(BatchIdDTO(batchId))
+    val json = jacksonObjectMapper().writeValueAsString(BatchId(batchId))
     sessions.filter { it.isOpen }.forEach { it.asyncRemote.sendText(json) }
   }
 }

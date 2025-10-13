@@ -1,0 +1,38 @@
+<div class="border border-zinc-800 p-4 py-2 rounded-lg mb-4">
+  <div class="w-full grid grid-cols-5 gap-4">
+    <mat-form-field class="col-span-4">
+      <mat-label>Nb of process</mat-label>
+      <input matInput type="number" [(ngModel)]="parameters.nbOfProcess"
+             class="bg-gray-900 text-gray-100 rounded-lg px-3 py-2 focus:outline-none" />
+    </mat-form-field>
+
+    <div class="flex justify-center items-center">
+      <button class="w-full flex items-center justify-center text-red-500 hover:text-red-600 border border-red-500 hover:border-red-600 rounded-lg aspect-square" (click)="remove.emit()">
+        <mat-icon aria-label="previous" fontIcon="delete"></mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="w-full grid grid-cols-2 gap-4">
+    <mat-form-field>
+      <mat-label>Red deepness</mat-label>
+      <input matInput type="number" [(ngModel)]="parameters.redDeepness"
+             class="bg-gray-900 text-gray-100 rounded-lg px-3 py-2 focus:outline-none" />
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Yellow deepness</mat-label>
+      <input matInput type="number" [(ngModel)]="parameters.yellowDeepness"
+             class="bg-gray-900 text-gray-100 rounded-lg px-3 py-2 focus:outline-none" />
+    </mat-form-field>
+  </div>
+
+  <mat-form-field class="w-full">
+    <mat-label>Docker image</mat-label>
+    <mat-select [(ngModel)]="parameters.image" class="text-gray-100 rounded-lg px-3 py-2 focus:outline-none">
+      @for (image of imagesValue; track image) {
+        <mat-option class="!text-gray-100" [value]="image">{{ image }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+</div>

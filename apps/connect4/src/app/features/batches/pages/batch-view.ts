@@ -1,34 +1,30 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {BatchesService} from "../services/batches-service/batches-service";
 import {Observable} from "rxjs";
 import {Batch} from "../models/Batch";
-import {MatFormField} from "@angular/material/form-field";
-import {MatInput, MatLabel} from "@angular/material/input";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {BatchParameters, JobParameters} from "../models/BatchParameters";
 import {AsyncPipe} from "@angular/common";
 import {RouterLink} from "@angular/router";
 import {StatusIndicator} from "../../../shared/components/status-indicator/status-indicator";
+import {Images} from "../models/Images";
+import {CardParameters} from "../components/card-parameters/card-parameters";
 
 @Component({
   selector: 'app-batch-view',
   imports: [
-    MatFormField,
-    MatInput,
-    MatLabel,
     ReactiveFormsModule,
     AsyncPipe,
     FormsModule,
     RouterLink,
-    StatusIndicator
+    StatusIndicator,
+    CardParameters
   ],
   templateUrl: './batch-view.html',
   styleUrl: './batch-view.css',
 })
 export class BatchView {
-  nbOfProcess = 10;
-  redDeepness = 3;
-  yellowDeepness = 3;
+  jobsParameters: JobParameters[] = []
 
   batchesArray$: Observable<Batch[]>;
   //remainingTasks$: Observable<RemainingTasks>;
@@ -37,7 +33,11 @@ export class BatchView {
     this.batchesArray$ = batchesService.batchesArray$;
   }
 
+  addJobParameters() {
+    this.jobsParameters.push(new JobParameters(2, 3, 3, Images.Connect4BotKotlin))
+  }
+
   startBatch() {
-    this.batchesService.startBatch(new BatchParameters(this.nbOfProcess, new JobParameters(this.redDeepness, this.yellowDeepness))).subscribe();
+    if (this.jobsParameters.length > 0) this.batchesService.startBatch(new BatchParameters(this.jobsParameters)).subscribe();
   }
 }

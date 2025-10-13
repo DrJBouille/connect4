@@ -8,7 +8,7 @@
       "options": {
         "commands": [
           "gradle shadowjar",
-          "docker build -t connect4-bot:latest ."
+          "docker build -t connect4-bot-kotlin:latest ."
         ],
         "cwd": "apps/connect4-bot"
       }

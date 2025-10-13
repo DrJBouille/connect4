@@ -8,6 +8,5 @@ class Batch {
   @BsonId
   lateinit var id: String
   lateinit var jobs: List<Jobs>
-  lateinit var jobParameter: JobParameter
   var status: Status = Status.NOT_STARTED
 }

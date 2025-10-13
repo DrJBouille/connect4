@@ -1,14 +1,17 @@
+import {Images} from "./Images";
+
 export class BatchParameters {
   constructor(
-    public nbOfProcess: number,
-    public jobParameter: JobParameters
+    public jobParameters: JobParameters[]
   ) {}
 }
 
 export class JobParameters {
   constructor(
+    public nbOfProcess: number,
     public redDeepness: number,
-    public yellowDeepness: number
+    public yellowDeepness: number,
+    public image: Images
   ) {}
 }
 

@@ -3,8 +3,7 @@ package com.connect4.service
 import com.connect4.controller.BatchesNotifier
 import com.connect4.controller.JobsNotifier
 import com.connect4.model.Batch
-import com.connect4.model.DTO.BatchParameters
-import com.connect4.model.GlobalStats
+import com.connect4.model.dto.BatchParameters
 import com.connect4.model.Jobs
 import com.connect4.model.RemainingTasks
 import com.connect4.model.Status
@@ -62,7 +61,7 @@ class BatchesService {
               batchesRepository.update(batch)
               jobsNotifier.broadcast(batch.id, job.jobsId)
 
-              val stats = dockerService.getStats(batch.jobParameter)
+              val stats = dockerService.getStats(job)
               job.stats = stats
 
               batchesRepository.update(batch)
@@ -100,17 +99,21 @@ class BatchesService {
   fun createBatch(batchParameters: BatchParameters): String {
     val batchId = UUID.randomUUID().toString()
 
-    val jobs = List(batchParameters.nbOfProcess) {
-      val jobs = Jobs()
-      jobs.batchId = batchId
-      jobs.jobsId = UUID.randomUUID().toString()
-      jobs
+    val jobs = mutableListOf<Jobs>()
+
+    for (parameters in batchParameters.jobParameters) {
+      jobs.addAll(List(parameters.nbOfProcess) {
+        val jobs = Jobs()
+        jobs.batchId = batchId
+        jobs.jobsId = UUID.randomUUID().toString()
+        jobs.parameters = parameters
+        jobs
+      })
     }
 
     val batch = Batch()
     batch.id = batchId
     batch.jobs = jobs
-    batch.jobParameter = batchParameters.jobParameter
     batchesRepository.persist(batch)
 
     jobs.forEach {

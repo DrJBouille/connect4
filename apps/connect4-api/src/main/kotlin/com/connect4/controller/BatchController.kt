@@ -1,9 +1,8 @@
 package com.connect4.controller
 
-import com.connect4.model.DTO.BatchParameters
-import com.connect4.model.DTO.BatchIdDTO
+import com.connect4.model.dto.BatchId
+import com.connect4.model.dto.BatchParameters
 import com.connect4.service.BatchesService
-import com.connect4.service.JobsService
 import jakarta.inject.Inject
 import jakarta.ws.rs.GET
 import jakarta.ws.rs.POST
@@ -19,12 +18,16 @@ class BatchController {
   @POST
   @Path("/start")
   fun createBatches(batchParameters: BatchParameters): Response {
-    if (batchParameters.nbOfProcess == 0) return Response.status(Response.Status.BAD_REQUEST).entity("nbOfProcess should be higher than 0").build()
+    for (parameters in batchParameters.jobParameters) {
+      if (parameters.nbOfProcess <= 0) return Response.status(Response.Status.BAD_REQUEST).entity("The number of process should be higher than 0").build()
+      if (parameters.redDeepness <= 0) return Response.status(Response.Status.BAD_REQUEST).entity("red depth should be higher than 0").build()
+      if (parameters.yellowDeepness <= 0) return Response.status(Response.Status.BAD_REQUEST).entity("yellow depth should be higher than 0").build()
+    }
 
     val batchId = batchesService.createBatch(batchParameters)
     batchesService.startProcess()
 
-    return Response.ok().entity(BatchIdDTO(batchId)).build()
+    return Response.ok().entity(BatchId(batchId)).build()
   }
 
   @GET
