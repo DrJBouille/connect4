@@ -1,6 +1,6 @@
 package com.connect4.repository
 
-import com.connect4.model.Batch
+import com.connect4.model.entity.Batch
 import io.quarkus.mongodb.panache.kotlin.PanacheMongoRepository
 import jakarta.enterprise.context.ApplicationScoped
 

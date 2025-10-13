@@ -2,7 +2,7 @@ package com.connect4.model
 
 import jakarta.validation.constraints.NotBlank
 
-class JobParameters{
+class Parameters{
   @NotBlank
   var nbOfProcess: Int = 1
 

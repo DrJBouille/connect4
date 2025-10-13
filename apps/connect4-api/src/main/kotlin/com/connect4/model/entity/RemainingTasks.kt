@@ -1,4 +1,4 @@
-package com.connect4.model
+package com.connect4.model.entity
 
 data class RemainingTasks (
   val threadInUse: Int = 0,

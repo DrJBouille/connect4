@@ -18,7 +18,7 @@ class BatchController {
   @POST
   @Path("/start")
   fun createBatches(batchParameters: BatchParameters): Response {
-    for (parameters in batchParameters.jobParameters) {
+    for (parameters in batchParameters.parameters) {
       if (parameters.nbOfProcess <= 0) return Response.status(Response.Status.BAD_REQUEST).entity("The number of process should be higher than 0").build()
       if (parameters.redDeepness <= 0) return Response.status(Response.Status.BAD_REQUEST).entity("red depth should be higher than 0").build()
       if (parameters.yellowDeepness <= 0) return Response.status(Response.Status.BAD_REQUEST).entity("yellow depth should be higher than 0").build()

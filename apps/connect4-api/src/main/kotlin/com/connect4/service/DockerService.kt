@@ -1,8 +1,6 @@
 package com.connect4.service
 
-import com.connect4.model.Images
-import com.connect4.model.JobParameters
-import com.connect4.model.Jobs
+import com.connect4.model.entity.Jobs
 import com.connect4.model.Stats
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.dockerjava.api.DockerClient

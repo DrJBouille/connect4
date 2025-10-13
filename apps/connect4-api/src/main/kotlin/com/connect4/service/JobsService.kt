@@ -3,9 +3,9 @@ package com.connect4.service
 import com.connect4.controller.BatchesNotifier
 import com.connect4.controller.JobsNotifier
 import com.connect4.model.Status
-import com.connect4.model.Batch
-import com.connect4.model.Jobs
-import com.connect4.model.RemainingTasks
+import com.connect4.model.entity.Batch
+import com.connect4.model.entity.Jobs
+import com.connect4.model.entity.RemainingTasks
 import com.connect4.repository.BatchesRepository
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
