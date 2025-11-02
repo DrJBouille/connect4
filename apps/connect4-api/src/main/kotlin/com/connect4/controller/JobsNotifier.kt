@@ -11,7 +11,7 @@ import jakarta.websocket.Session
 import jakarta.websocket.server.ServerEndpoint
 
 @ApplicationScoped
-@ServerEndpoint("/ws/batches")
+@ServerEndpoint("/ws/jobs")
 class JobsNotifier {
   private val sessions: MutableSet<Session> = mutableSetOf()
 

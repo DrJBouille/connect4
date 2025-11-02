@@ -11,7 +11,7 @@ import jakarta.websocket.Session
 import jakarta.websocket.server.ServerEndpoint
 
 @ApplicationScoped
-@ServerEndpoint("/ws/jobs")
+@ServerEndpoint("/ws/tasks")
 class TasksNotifier {
   private val sessionsToJobId: MutableMap<Session, String> = mutableMapOf()
 
