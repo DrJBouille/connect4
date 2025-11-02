@@ -3,16 +3,16 @@
   <div class="bg-neutral-900 border border-zinc-800 rounded-lg shadow-md overflow-x-auto p-4 col-span-4 overflow-scroll">
     <table class="min-w-full border border-zinc-800 rounded-md divide-y divide-zinc-800 overflow-hidden">
       <tr>
-        <th class="px-4 py-2 text-left">Batch UUID</th>
+        <th class="px-4 py-2 text-left">Job UUID</th>
         <th class="px-4 text-left">Status</th>
         <th class="px-4 text-left">Action</th>
       </tr>
 
-      @for (element of (batchesArray$ | async); track element.id) {
+      @for (element of (jobsArray$ | async); track element.id) {
         <tr class="hover:bg-neutral-800 transition-colors duration-200">
           <td class="px-4 py-3">{{element.id}}</td>
           <td class="px-4"><app-status-indicator [status]="element.status"></app-status-indicator></td>
-          <td class="px-4"><a [routerLink]="['/batches', element.id]" class="underline">More</a></td>
+          <td class="px-4"><a [routerLink]="['/jobs', element.id]" class="underline">More</a></td>
         </tr>
       }
     </table>

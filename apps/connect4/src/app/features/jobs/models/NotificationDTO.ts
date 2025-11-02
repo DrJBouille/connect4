@@ -1,6 +1,6 @@
 export class NotificationDTO {
   constructor(
-    public jobsId: string
+    public batchId: string,
   ) {
   }
 }

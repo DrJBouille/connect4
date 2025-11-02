@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { JobsView } from './jobs-view';
+import { JobsView } from './job-view.component';
 
-describe('JobsView', () => {
+describe('BatchView', () => {
   let component: JobsView;
   let fixture: ComponentFixture<JobsView>;
 

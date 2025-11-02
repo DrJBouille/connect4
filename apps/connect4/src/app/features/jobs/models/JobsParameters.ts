@@ -1,12 +1,12 @@
 import {Images} from "./Images";
 
-export class BatchParameters {
+export class JobsParameters {
   constructor(
-    public jobParameters: JobParameters[]
+    public parameters: Parameters[]
   ) {}
 }
 
-export class JobParameters {
+export class Parameters {
   constructor(
     public nbOfProcess: number,
     public redDeepness: number,

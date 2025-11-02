@@ -1,55 +1,45 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
+import {WebsocketService} from "../../../../core/websocket/websocket-servicre";
 import {BehaviorSubject, map, Subject, Subscription} from "rxjs";
 import {Jobs} from "../../models/Jobs";
+import {JobsParameters} from "../../models/JobsParameters";
 import {RemainingTasks} from "../../models/RemainingTasks";
-import {WebsocketService} from "../../../../core/websocket/websocket-servicre";
-import {IdDTO} from "../../models/IdDTO";
-import {Status} from "../../../../shared/models/Status";
-import {GlobalStats} from "../../../batches/models/GlobalStats";
+import {GlobalStats} from "../../models/GlobalStats";
 
 @Injectable({
   providedIn: 'root'
 })
-export class JobsService implements OnDestroy {
-  private remainingTasksSubject= new Subject<RemainingTasks>();
-
+export class JobsService implements OnDestroy{
   private jobsSubscription ?: Subscription;
+  private jobIdSubscription: Subscription;
   private remainingTaskSubscription ?: Subscription;
-  private wsSubscription ?: Subscription;
 
   private jobsMap$ = new BehaviorSubject(new Map<string, Jobs>());
+  private remainingTasksSubject= new Subject<RemainingTasks>();
 
-  private url = "http://localhost:8080/ws/jobs";
-
-  constructor(private http: HttpClient, private ws: WebsocketService) {}
-
-  init(batchId: string) {
-    this.getJobs(batchId).subscribe(jobs => {
+  constructor(private http: HttpClient, private ws: WebsocketService) {
+    this.getJobs().subscribe(batches => {
       const jobsMap = new Map<string, Jobs>()
-      jobs.forEach(job => {
-        jobsMap.set(job.jobsId, job);
+      batches.forEach(batch => {
+        jobsMap.set(batch.id, batch);
       });
       this.jobsMap$.next(jobsMap);
-      this.getRemainingTasks();
+
+      this.remainingTaskSubscription = this.getRemainingTasks().subscribe(remainingTasks => this.remainingTasksSubject.next(remainingTasks));
     });
 
-    this.wsSubscription = this.ws.connect(this.url).subscribe((notification: any) => {
-      if (notification.type === 'CONNECTED') {
-        this.ws.send(this.url, new IdDTO(batchId));
-        return;
-      }
+    this.jobIdSubscription = this.ws.connect("http://localhost:8080/ws/jobs").subscribe((notification: any) => {
+      if (notification.type === 'CONNECTED') return;
 
-      this.jobsSubscription = this.getJob(batchId, notification.jobsId).subscribe(jobs => {
+      this.jobsSubscription = this.getJob(notification.id).subscribe(batch => {
         const newMap = new Map(this.jobsMap$.value)
-        newMap.set(jobs.jobsId, {...jobs});
+        newMap.set(batch.id, {...batch});
         this.jobsMap$.next(newMap);
       });
 
-      this.getRemainingTasks();
+      this.remainingTaskSubscription = this.getRemainingTasks().subscribe(remainingTasks => this.remainingTasksSubject.next(remainingTasks));
     });
-
-    this.ws.send(this.url, new IdDTO(batchId));
   }
 
   get jobsArray$() {
@@ -62,34 +52,29 @@ export class JobsService implements OnDestroy {
     return this.remainingTasksSubject.asObservable();
   }
 
-  private getJob(batchId: string, jobsId: string) {
-    return this.http.get<Jobs>(`http://localhost:8080/api/jobs/${batchId}/${jobsId}`);
+  startJob(batchParameters: JobsParameters) {
+    return this.http.post('http://localhost:8080/api/jobs/start', batchParameters);
   }
 
-  private getJobs(batchId: string) {
-    return this.http.get<Jobs[]>(`http://localhost:8080/api/jobs/${batchId}`);
+  getJob(jobId: string) {
+    return this.http.get<Jobs>(`http://localhost:8080/api/jobs/${jobId}`)
+  }
+
+  getJobs() {
+    return this.http.get<Jobs[]>('http://localhost:8080/api/jobs');
   }
 
   getGlobalStats(redDeepness: number, yellowDeepness: number) {
-    return this.http.get<GlobalStats>(`http://localhost:8080/api/stats/stats/${redDeepness}/${yellowDeepness}`);
+    return this.http.get<GlobalStats>(`http://localhost:8080/api/jobs/stats/${redDeepness}/${yellowDeepness}`);
   }
 
   private getRemainingTasks() {
-    this.jobsArray$.subscribe(jobs => {
-      this.remainingTasksSubject.next(new RemainingTasks(
-        jobs.filter(job => job.status == Status.NOT_STARTED).length,
-        jobs.filter(job => job.status == Status.PENDING).length,
-        jobs.filter(job => job.status == Status.RUNNING).length,
-        jobs.filter(job => job.status == Status.FINISHED).length,
-        jobs.filter(job => job.status == Status.FAILED).length
-      ));
-    });
-
+    return this.http.get<RemainingTasks>(`http://localhost:8080/api/jobs/remainingJobs`);
   }
 
   ngOnDestroy() {
+    this.jobIdSubscription.unsubscribe();
     this.jobsSubscription?.unsubscribe();
     this.remainingTaskSubscription?.unsubscribe();
-    this.wsSubscription?.unsubscribe();
   }
 }

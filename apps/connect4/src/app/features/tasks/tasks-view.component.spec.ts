@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { BatchView } from './batch-view';
+import { TasksView } from './tasks-view.component';
 
-describe('BatchView', () => {
-  let component: BatchView;
-  let fixture: ComponentFixture<BatchView>;
+describe('JobsView', () => {
+  let component: TasksView;
+  let fixture: ComponentFixture<TasksView>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [BatchView],
+      imports: [TasksView],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(BatchView);
+    fixture = TestBed.createComponent(TasksView);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

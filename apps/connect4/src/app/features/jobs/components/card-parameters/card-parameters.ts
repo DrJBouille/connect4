@@ -2,7 +2,7 @@ import {Component, EventEmitter, Input, output, Output} from '@angular/core';
 import {FormsModule} from "@angular/forms";
 import {MatFormField} from "@angular/material/form-field";
 import {MatInput, MatLabel} from "@angular/material/input";
-import {JobParameters} from "../../models/BatchParameters";
+import {Parameters} from "../../models/JobsParameters";
 import {Images} from "../../models/Images";
 import {MatSelect, MatOption} from "@angular/material/select";
 import {MatIcon} from "@angular/material/icon";
@@ -23,7 +23,7 @@ import {MatIcon} from "@angular/material/icon";
   styleUrl: './card-parameters.css',
 })
 export class CardParameters {
-  @Input() parameters!: JobParameters;
+  @Input() parameters!: Parameters;
   @Output() remove = new EventEmitter();
 
   imagesValue = Object.values(Images)

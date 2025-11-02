@@ -8,7 +8,7 @@ import jakarta.ws.rs.PathParam
 import jakarta.ws.rs.core.Response
 
 
-@Path("/api/taks")
+@Path("/api/tasks")
 class TasksController {
   @Inject
   private lateinit var tasksService: TasksService
