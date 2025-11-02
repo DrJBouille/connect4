@@ -1,14 +1,14 @@
-package com.connect4.model.entity
+package com.connect4.model.jobs
 
-import com.connect4.model.entity.Jobs
 import com.connect4.model.Status
+import com.connect4.model.tasks.Tasks
 import io.quarkus.mongodb.panache.common.MongoEntity
 import org.bson.codecs.pojo.annotations.BsonId
 
-@MongoEntity(collection = "batches")
-class Batch {
+@MongoEntity(collection = "jobs")
+class Jobs {
   @BsonId
   lateinit var id: String
-  lateinit var jobs: List<Jobs>
+  lateinit var tasks: List<Tasks>
   var status: Status = Status.NOT_STARTED
 }

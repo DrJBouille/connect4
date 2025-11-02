@@ -1,7 +1,7 @@
 package com.connect4.service
 
-import com.connect4.model.entity.Jobs
-import com.connect4.model.Stats
+import com.connect4.model.tasks.Tasks
+import com.connect4.model.stats.Stats
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.dockerjava.api.DockerClient
 import com.github.dockerjava.core.DefaultDockerClientConfig
@@ -16,8 +16,8 @@ import java.time.Duration
 class DockerService {
   private val mapper = jacksonObjectMapper()
 
-  fun getStats(jobs: Jobs): Stats {
-    val parameters = jobs.parameters
+  fun getStats(tasks: Tasks): Stats {
+    val parameters = tasks.parameters
     val dockerClient = createDockerClient()
 
     val container = dockerClient.createContainerCmd(parameters.image.imageName).withCmd(parameters.redDeepness.toString(), parameters.yellowDeepness.toString()).exec()

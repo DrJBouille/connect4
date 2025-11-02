@@ -1,18 +1,18 @@
 package com.connect4.service
 
-import com.connect4.model.GlobalStats
+import com.connect4.model.stats.GlobalStats
 import com.connect4.model.Status
-import com.connect4.repository.BatchesRepository
+import com.connect4.repository.JobsRepository
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 
 @ApplicationScoped
 class StatsService {
 
-  @Inject private lateinit var batchesRepository: BatchesRepository
+  @Inject private lateinit var jobsRepository: JobsRepository
 
   fun getGlobalStats(redDeepness: Int, yellowDeepness: Int): GlobalStats? {
-    val batches = batchesRepository.findByBatchJobParameter(redDeepness, yellowDeepness)
+    val batches = jobsRepository.findByJobParameters(redDeepness, yellowDeepness)
 
     if (batches.isEmpty()) return null
 
@@ -24,9 +24,9 @@ class StatsService {
     val movesTime = mutableListOf<MutableList<Long>>()
 
     for (batch in batches) {
-      val maxNbOfMoves = batch.jobs.maxOfOrNull { it.stats?.moves?.size ?: 0 } ?: 0
+      val maxNbOfMoves = batch.tasks.maxOfOrNull { it.stats?.moves?.size ?: 0 } ?: 0
 
-      for (job in batch.jobs) {
+      for (job in batch.tasks) {
         if (job.status != Status.FINISHED) continue
 
         gamesTime.add(job.stats!!.gameTime)

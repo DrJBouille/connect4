@@ -1,6 +1,5 @@
 package com.connect4.controller
 
-import com.connect4.service.BatchesService
 import com.connect4.service.StatsService
 import jakarta.inject.Inject
 import jakarta.ws.rs.GET

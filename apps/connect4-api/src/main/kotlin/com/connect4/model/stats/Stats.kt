@@ -1,4 +1,4 @@
-package com.connect4.model
+package com.connect4.model.stats
 
 class Stats {
   var gameTime: Long = 0

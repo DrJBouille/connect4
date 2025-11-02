@@ -1,16 +1,16 @@
 package com.connect4.repository
 
-import com.connect4.model.entity.Batch
+import com.connect4.model.jobs.Jobs
 import io.quarkus.mongodb.panache.kotlin.PanacheMongoRepository
 import jakarta.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
-class BatchesRepository : PanacheMongoRepository<Batch> {
-  fun finByBatchId(id: String): Batch? {
+class JobsRepository : PanacheMongoRepository<Jobs> {
+  fun findByJobId(id: String): Jobs? {
     return find("_id", id).firstResult()
   }
 
-  fun findByBatchJobParameter(redDeepness: Int, yellowDeepness: Int): List<Batch> {
+  fun findByJobParameters(redDeepness: Int, yellowDeepness: Int): List<Jobs> {
     return find(
       "jobParameter.redDeepness = ?1 and jobParameter.yellowDeepness = ?2",
       redDeepness,
